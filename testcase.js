@@ -1,6 +1,3 @@
-Here are the Jest test cases for the provided JavaScript files:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Login from './Login';
@@ -88,4 +85,3 @@ test('reportWebVitals is called', () => {
   render(<App />);
   expect(reportWebVitals).toHaveBeenCalled();
 });
-```
