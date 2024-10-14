@@ -47,6 +47,7 @@ jobs:
             '^.+\\.(js|jsx)$': 'babel-jest'
           },
           testMatch: ['**/testcase.js']
+          moduleDirectories: ['node_modules', 'src', '.']
           rootDir: '.'
         };" > jest.config.js
     - name: Run tests from testcase.js
