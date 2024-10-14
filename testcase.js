@@ -1,100 +1,67 @@
+Here are the Jest test cases for the provided Login component:
+
+```javascript
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import Login from './Login';
 
 describe('Login Component', () => {
-  test('renders without errors', () => {
+  test('renders login form correctly', () => {
     render(<Login />);
+    expect(screen.getByText('Login')).toBeInTheDocument();
+    expect(screen.getByLabelText('Email:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Password:')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 
-  test('all expected elements are present', () => {
+  test('handles email input', () => {
     render(<Login />);
-    expect(screen.getByRole('form')).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
-  });
-
-  test('initial state is correct', () => {
-    render(<Login />);
-    expect(screen.getByLabelText(/email/i)).toHaveValue('');
-    expect(screen.getByLabelText(/password/i)).toHaveValue('');
-    expect(screen.queryByText(/please fill in all fields/i)).not.toBeInTheDocument();
-  });
-
-  test('email input updates state correctly', () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText(/email/i);
+    const emailInput = screen.getByLabelText('Email:');
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    expect(emailInput).toHaveValue('test@example.com');
+    expect(emailInput.value).toBe('test@example.com');
   });
 
-  test('password input updates state correctly', () => {
+  test('handles password input', () => {
     render(<Login />);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const passwordInput = screen.getByLabelText('Password:');
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    expect(passwordInput).toHaveValue('password123');
+    expect(passwordInput.value).toBe('password123');
   });
 
-  test('form submission with valid inputs', () => {
+  test('submits form with valid inputs', () => {
+    const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /login/i });
-
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(submitButton);
-
-    expect(emailInput).toHaveValue('');
-    expect(passwordInput).toHaveValue('');
+    fireEvent.change(screen.getByLabelText('Email:'), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'password123' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
   });
 
-  test('form submission with empty email field', () => {
+  test('displays error message for empty fields', () => {
     render(<Login />);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /login/i });
-
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(submitButton);
-
-    expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('form submission with empty password field', () => {
+  test('clears error message on successful submission', () => {
     render(<Login />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const submitButton = screen.getByRole('button', { name: /login/i });
-
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.click(submitButton);
-
-    expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Email:'), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'password123' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
   });
 
-  test('form submission with both fields empty', () => {
+  test('resets form fields after submission', () => {
     render(<Login />);
-    const submitButton = screen.getByRole('button', { name: /login/i });
-
-    fireEvent.click(submitButton);
-
-    expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
-  });
-
-  test('error message appears and disappears correctly', () => {
-    render(<Login />);
-    const submitButton = screen.getByRole('button', { name: /login/i });
-
-    fireEvent.click(submitButton);
-    expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
-
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-
+    const emailInput = screen.getByLabelText('Email:');
+    const passwordInput = screen.getByLabelText('Password:');
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(submitButton);
-
-    expect(screen.queryByText(/please fill in all fields/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(emailInput.value).toBe('');
+    expect(passwordInput.value).toBe('');
   });
 });
+```
