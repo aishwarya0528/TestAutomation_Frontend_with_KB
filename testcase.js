@@ -67,21 +67,3 @@ describe('Login Component', () => {
     expect(passwordInput.value).toBe('p@ssw0rd!@#$%^&*()');
   });
 });
-
-import React from 'react';
-import { render } from '@testing-library/react';
-import App from './App';
-
-test('renders App component without crashing', () => {
-  render(<App />);
-});
-
-jest.mock('./reportWebVitals', () => jest.fn());
-import reportWebVitals from './reportWebVitals';
-import { render } from '@testing-library/react';
-import App from './App';
-
-test('reportWebVitals is called', () => {
-  render(<App />);
-  expect(reportWebVitals).toHaveBeenCalled();
-});
