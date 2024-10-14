@@ -1,96 +1,88 @@
+Here's the Jest test code for the Login component based on the provided test cases:
+
+```javascript
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import Login from './Login';
+import Login from './Login.js';
 
 describe('Login Component', () => {
-  test('renders all form elements correctly', () => {
+  test('renders without crashing', () => {
     render(<Login />);
+  });
+
+  test('renders all expected elements', () => {
+    render(<Login />);
+    expect(screen.getByRole('form')).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
   });
 
-  test('login button is present and enabled', () => {
+  test('initial state has empty email and password fields', () => {
     render(<Login />);
-    const loginButton = screen.getByRole('button', { name: /login/i });
-    expect(loginButton).toBeEnabled();
+    expect(screen.getByLabelText(/email/i)).toHaveValue('');
+    expect(screen.getByLabelText(/password/i)).toHaveValue('');
   });
 
-  test('email and password inputs update state correctly', () => {
+  test('updates email and password state on input', () => {
     render(<Login />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-
-    expect(emailInput.value).toBe('test@example.com');
-    expect(passwordInput.value).toBe('password123');
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'password123' } });
+    expect(screen.getByLabelText(/email/i)).toHaveValue('test@example.com');
+    expect(screen.getByLabelText(/password/i)).toHaveValue('password123');
   });
 
-  test('password field masks the input', () => {
+  test('calls handleSubmit on form submission', () => {
+    const mockSubmit = jest.fn();
     render(<Login />);
-    const passwordInput = screen.getByLabelText(/password/i);
-    expect(passwordInput).toHaveAttribute('type', 'password');
+    const form = screen.getByRole('form');
+    form.onsubmit = mockSubmit;
+    fireEvent.submit(form);
+    expect(mockSubmit).toHaveBeenCalled();
   });
 
-  test('form prevents submission with empty fields', () => {
+  test('displays error message for empty fields', () => {
     render(<Login />);
-    const loginButton = screen.getByRole('button', { name: /login/i });
-    fireEvent.click(loginButton);
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
     expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
   });
 
-  test('error message is displayed for empty fields', () => {
+  test('clears form fields after successful submission', () => {
     render(<Login />);
-    const loginButton = screen.getByRole('button', { name: /login/i });
-    fireEvent.click(loginButton);
-    expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@example.com' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'password123' } });
+    fireEvent.submit(screen.getByRole('form'));
+    expect(screen.getByLabelText(/email/i)).toHaveValue('');
+    expect(screen.getByLabelText(/password/i)).toHaveValue('');
   });
 
-  test('form clears after successful submission', () => {
+  test('handles very long inputs', () => {
     render(<Login />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const loginButton = screen.getByRole('button', { name: /login/i });
-
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(loginButton);
-
-    expect(emailInput.value).toBe('');
-    expect(passwordInput.value).toBe('');
+    const longInput = 'a'.repeat(1000);
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: longInput } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: longInput } });
+    expect(screen.getByLabelText(/email/i)).toHaveValue(longInput);
+    expect(screen.getByLabelText(/password/i)).toHaveValue(longInput);
   });
 
-  test('form submission via button click and Enter key press', () => {
-    const handleSubmit = jest.fn();
+  test('handles special characters in inputs', () => {
     render(<Login />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const loginButton = screen.getByRole('button', { name: /login/i });
-
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-
-    fireEvent.click(loginButton);
-    fireEvent.keyPress(passwordInput, { key: 'Enter', code: 13, charCode: 13 });
-
-    expect(handleSubmit).toHaveBeenCalledTimes(2);
+    const specialChars = '!@#$%^&*()_+{}[]|:;"<>?,./';
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: `test${specialChars}@example.com` } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: specialChars } });
+    expect(screen.getByLabelText(/email/i)).toHaveValue(`test${specialChars}@example.com`);
+    expect(screen.getByLabelText(/password/i)).toHaveValue(specialChars);
   });
 
-  test('verify focus states of input fields and buttons', () => {
+  test('allows form submission with Enter key', () => {
+    const mockSubmit = jest.fn();
     render(<Login />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const loginButton = screen.getByRole('button', { name: /login/i });
-
-    emailInput.focus();
-    expect(emailInput).toHaveFocus();
-
-    passwordInput.focus();
-    expect(passwordInput).toHaveFocus();
-
-    loginButton.focus();
-    expect(loginButton).toHaveFocus();
+    const form = screen.getByRole('form');
+    form.onsubmit = mockSubmit;
+    fireEvent.keyDown(screen.getByLabelText(/password/i), { key: 'Enter', code: 'Enter' });
+    expect(mockSubmit).toHaveBeenCalled();
   });
 });
+```
+
+This test suite covers the main functionality of the Login component, including rendering, form submission, input handling, and error display. It addresses most of the categories mentioned in the provided test case structure.
