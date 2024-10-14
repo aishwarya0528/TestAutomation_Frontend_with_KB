@@ -1,0 +1,43 @@
+name: React Test CI
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm install
+        npm install --save-dev jest @babel/preset-env @babel/preset-react @testing-library/react @testing-library/jest-dom
+        
+    - name: Update testcase.js location
+      run: |
+        if [ ! -f frontend/testcase.js ] && [ -f testcase.js ]; then
+          mv testcase.js frontend/
+        fi
+    - name: Display testcase.js content
+      run: |
+        cd frontend
+        cat testcase.js
+    - name: Create Jest config
+      run: |
+        cd frontend
+        echo "module.exports = {
+          testEnvironment: 'jsdom',
+          setupFilesAfterEnv: ['@testing-library/jest-dom'],
+          transform: {
+            '^.+\\\\.(js|jsx)$': 'babel-jest'
+          },
+          testMatch: ['**/testcase.js'],
+          moduleDirectories: ['node_modules', 'src', '.'],
+          rootDir: '.'
+        };" > jest.config.js
+    - name: Run tests from testcase.js
+      run: |
+        cd frontend
+        npx jest --config=jest.config.js
