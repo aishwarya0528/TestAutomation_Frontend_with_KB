@@ -1,6 +1,3 @@
-Here's the Jest test code for the Login component based on the provided test cases:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Login from './Login';
@@ -90,6 +87,3 @@ test('handles successful authentication', async () => {
   await waitFor(() => expect(mockAuth).toHaveBeenCalledWith('test@example.com', 'password123'));
   expect(screen.getByText(/login successful/i)).toBeInTheDocument();
 });
-```
-
-This test suite covers all the test cases specified in the provided JSON structure, including rendering, form submission, input validation, state updates, accessibility, error handling, edge cases, user interactions, performance, and integration tests.
