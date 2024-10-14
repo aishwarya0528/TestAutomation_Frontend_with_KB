@@ -1,6 +1,3 @@
-Here's the Jest test code for the Login component based on the provided test cases:
-
-```javascript
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import Login from './Login.js';
@@ -83,6 +80,3 @@ describe('Login Component', () => {
     expect(mockSubmit).toHaveBeenCalled();
   });
 });
-```
-
-This test suite covers the main functionality of the Login component, including rendering, form submission, input handling, and error display. It addresses most of the categories mentioned in the provided test case structure.
