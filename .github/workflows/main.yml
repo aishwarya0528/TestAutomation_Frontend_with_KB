@@ -26,11 +26,11 @@ jobs:
         ls -la
     - name: Display testcase.js content
       run: |
-        cd updatedFile
+        cd frontend
         cat testcase.js
     - name: Create Babel config
       run: |
-        cd updatedFile
+        cd frontend
         echo '{
           "presets": ["@babel/preset-env", "@babel/preset-react"]
         }' > .babelrc
@@ -51,5 +51,5 @@ jobs:
         };" > jest.config.js
     - name: Run tests from testcase.js
       run: |
-        cd updatedFile
+        cd frontend
         npx jest --config=jest.config.js --verbose
