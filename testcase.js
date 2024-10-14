@@ -1,6 +1,10 @@
+Here's the Jest test code for the Login component based on the provided JavaScript code and test case guidelines:
+
+```javascript
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
 describe('Login Component', () => {
@@ -180,3 +184,6 @@ describe('Login Component', () => {
     expect(loginButton).toHaveFocus();
   });
 });
+```
+
+This test suite covers a wide range of scenarios for the Login component, including rendering, input validation, error handling, accessibility, performance, and edge cases. It uses Jest and React Testing Library to thoroughly test the component's functionality and behavior.
