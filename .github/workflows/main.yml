@@ -11,46 +11,33 @@ jobs:
         node-version: '18.x'
     - name: Install dependencies
       run: |
-        cd updatedFile
+        cd frontend
         npm install
-        npm install --save-dev jest @babel/preset-env @babel/preset-react @testing-library/react @testing-library/jest-dom react react-dom
+        npm install --save-dev jest @babel/preset-env @babel/preset-react @testing-library/react @testing-library/jest-dom
         
     - name: Update testcase.js location
       run: |
         if [ ! -f frontend/testcase.js ] && [ -f testcase.js ]; then
           mv testcase.js frontend/
         fi
-    - name: List frontend directory contents
-      run: |
-        cd updatedFile
-        ls -la
     - name: Display testcase.js content
       run: |
         cd frontend
         cat testcase.js
-    - name: Create Babel config
-      run: |
-        cd frontend
-        echo '{
-          "presets": ["@babel/preset-env", "@babel/preset-react"]
-        }' > .babelrc
     - name: Create Jest config
       run: |
         cd frontend
         echo "module.exports = {
           testEnvironment: 'jsdom',
-          testEnvironmentOptions: {
-            customExportConditions: ['node', 'node-addons'],
-          },
           setupFilesAfterEnv: ['@testing-library/jest-dom'],
           transform: {
-            '^.+\\.(js|jsx)$': 'babel-jest'
+            '^.+\\\\.(js|jsx)$': 'babel-jest'
           },
-          testMatch: ['**/testcase.js']
-          moduleDirectories: ['node_modules', 'src', '.']
+          testMatch: ['**/testcase.js'],
+          moduleDirectories: ['node_modules', 'src', '.'],
           rootDir: '.'
         };" > jest.config.js
     - name: Run tests from testcase.js
       run: |
         cd frontend
-        npx jest --config=jest.config.js --verbose
+        npx jest --config=jest.config.js
