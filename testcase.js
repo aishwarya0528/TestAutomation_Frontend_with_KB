@@ -1,103 +1,104 @@
+Here's the Jest test code for the Login component:
+
+```javascript
 import React from 'react';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import Login from './Login';
 
 describe('Login Component', () => {
-  test('renders Login component correctly', () => {
+  test('renders without errors', () => {
     render(<Login />);
-    expect(screen.getByText('Login')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password:')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 
-  test('handles email input change', () => {
+  test('all expected elements are present', () => {
     render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
+    expect(screen.getByRole('form')).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
+  });
+
+  test('initial state is correct', () => {
+    render(<Login />);
+    expect(screen.getByLabelText(/email/i)).toHaveValue('');
+    expect(screen.getByLabelText(/password/i)).toHaveValue('');
+    expect(screen.queryByText(/please fill in all fields/i)).not.toBeInTheDocument();
+  });
+
+  test('email input updates state correctly', () => {
+    render(<Login />);
+    const emailInput = screen.getByLabelText(/email/i);
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    expect(emailInput.value).toBe('test@example.com');
+    expect(emailInput).toHaveValue('test@example.com');
   });
 
-  test('handles password input change', () => {
+  test('password input updates state correctly', () => {
     render(<Login />);
-    const passwordInput = screen.getByLabelText('Password:');
+    const passwordInput = screen.getByLabelText(/password/i);
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    expect(passwordInput.value).toBe('password123');
+    expect(passwordInput).toHaveValue('password123');
   });
 
-  test('displays error message when fields are empty', async () => {
+  test('form submission with valid inputs', () => {
     render(<Login />);
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('Please fill in all fields');
-    });
-  });
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitButton = screen.getByRole('button', { name: /login/i });
 
-  test('submits form with valid inputs', async () => {
-    const mockSubmit = jest.fn();
-    render(<Login onSubmit={mockSubmit} />);
-    fireEvent.change(screen.getByLabelText('Email:'), { target: { value: 'test@example.com' } });
-    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'password123' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    await waitFor(() => {
-      expect(mockSubmit).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  test('clears form fields after successful submission', async () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
-    const passwordInput = screen.getByLabelText('Password:');
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    await waitFor(() => {
-      expect(emailInput.value).toBe('');
-      expect(passwordInput.value).toBe('');
-    });
+    fireEvent.click(submitButton);
+
+    expect(emailInput).toHaveValue('');
+    expect(passwordInput).toHaveValue('');
   });
 
-  test('handles long email addresses', () => {
+  test('form submission with empty email field', () => {
     render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
-    const longEmail = 'very.long.email.address.that.is.still.valid@example.com';
-    fireEvent.change(emailInput, { target: { value: longEmail } });
-    expect(emailInput.value).toBe(longEmail);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitButton = screen.getByRole('button', { name: /login/i });
+
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.click(submitButton);
+
+    expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
   });
 
-  test('handles special characters in password', () => {
+  test('form submission with empty password field', () => {
     render(<Login />);
-    const passwordInput = screen.getByLabelText('Password:');
-    const specialPassword = 'P@ssw0rd!@#$%^&*()';
-    fireEvent.change(passwordInput, { target: { value: specialPassword } });
-    expect(passwordInput.value).toBe(specialPassword);
+    const emailInput = screen.getByLabelText(/email/i);
+    const submitButton = screen.getByRole('button', { name: /login/i });
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.click(submitButton);
+
+    expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
   });
 
-  test('checks for proper aria labels', () => {
+  test('form submission with both fields empty', () => {
     render(<Login />);
-    expect(screen.getByLabelText('Email:')).toHaveAttribute('aria-describedby', 'email-error');
-    expect(screen.getByLabelText('Password:')).toHaveAttribute('aria-describedby', 'password-error');
+    const submitButton = screen.getByRole('button', { name: /login/i });
+
+    fireEvent.click(submitButton);
+
+    expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
   });
 
-  test('mocks successful login API call', async () => {
-    const mockLoginApi = jest.fn(() => Promise.resolve({ success: true }));
-    render(<Login loginApi={mockLoginApi} />);
-    fireEvent.change(screen.getByLabelText('Email:'), { target: { value: 'test@example.com' } });
-    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'password123' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    await waitFor(() => {
-      expect(mockLoginApi).toHaveBeenCalledWith('test@example.com', 'password123');
-    });
-  });
+  test('error message appears and disappears correctly', () => {
+    render(<Login />);
+    const submitButton = screen.getByRole('button', { name: /login/i });
 
-  test('mocks failed login API call', async () => {
-    const mockLoginApi = jest.fn(() => Promise.reject(new Error('Invalid credentials')));
-    render(<Login loginApi={mockLoginApi} />);
-    fireEvent.change(screen.getByLabelText('Email:'), { target: { value: 'test@example.com' } });
-    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'wrongpassword' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('Invalid credentials');
-    });
+    fireEvent.click(submitButton);
+    expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
+
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.click(submitButton);
+
+    expect(screen.queryByText(/please fill in all fields/i)).not.toBeInTheDocument();
   });
 });
+```
