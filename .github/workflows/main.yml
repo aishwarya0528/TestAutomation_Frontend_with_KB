@@ -15,11 +15,6 @@ jobs:
         npm install
         npm install --save-dev jest @babel/preset-env @babel/preset-react @testing-library/react @testing-library/jest-dom
         
-    - name: Update testcase.js location
-      run: |
-        if [ ! -f frontend/testcase.js ] && [ -f testcase.js ]; then
-          mv testcase.js frontend/
-        fi
     - name: Display testcase.js content
       run: |
         cd frontend
