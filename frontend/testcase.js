@@ -1,6 +1,3 @@
-Here are the Jest test cases for the Login component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Login from './Login';
@@ -88,4 +85,3 @@ test('error messages disappear on valid input entry', async () => {
 
   fireEvent.click(submitButton);
 });
-```
