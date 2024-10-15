@@ -1,6 +1,3 @@
-Here's the Jest test code for the Login component:
-
-```javascript
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -224,4 +221,3 @@ describe('Login', () => {
     expect(emailInput).toHaveValue('test@example.com');
   });
 });
-```
