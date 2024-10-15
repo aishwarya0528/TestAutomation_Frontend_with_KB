@@ -1,6 +1,3 @@
-Here's the Jest test code for the Login component:
-
-```javascript
 import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import Login from './Login';
@@ -184,4 +181,3 @@ describe('Login Component', () => {
     expect(mockSubmit).not.toHaveBeenCalled();
   });
 });
-```
