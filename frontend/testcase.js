@@ -1,6 +1,3 @@
-Here are the Jest test cases for the Login component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -79,4 +76,3 @@ test('form is accessible via keyboard navigation', () => {
   userEvent.tab();
   expect(document.activeElement).toBe(loginButton);
 });
-```
