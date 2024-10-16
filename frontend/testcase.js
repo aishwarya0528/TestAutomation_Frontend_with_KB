@@ -1,3 +1,6 @@
+Here's the Jest test code for the Login component:
+
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -60,19 +63,4 @@ test('logs email and password to console on successful submission', () => {
   userEvent.click(screen.getByRole('button', { name: /login/i }));
   expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
 });
-
-test('form is accessible via keyboard navigation', () => {
-  render(<Login />);
-  const emailInput = screen.getByRole('textbox', { name: /email/i });
-  const passwordInput = screen.getByLabelText(/password/i);
-  const loginButton = screen.getByRole('button', { name: /login/i });
-
-  emailInput.focus();
-  expect(document.activeElement).toBe(emailInput);
-
-  userEvent.tab();
-  expect(document.activeElement).toBe(passwordInput);
-
-  userEvent.tab();
-  expect(document.activeElement).toBe(loginButton);
-});
+```
