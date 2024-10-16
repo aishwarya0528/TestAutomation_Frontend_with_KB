@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-//import './Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -8,16 +7,11 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Simple validation check
     if (email === '' || password === '') {
       setErrorMessage('Please fill in all fields');
       return;
     }
-
-    // You can add your authentication logic here, like calling an API
     console.log('Email:', email, 'Password:', password);
-    // Reset form fields after submission
     setEmail('');
     setPassword('');
     setErrorMessage('');
@@ -29,8 +23,9 @@ const Login = () => {
         <h2>Login</h2>
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         <div className="form-group">
-          <label>Email:</label>
+          <label htmlFor="email">Email:</label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -39,8 +34,9 @@ const Login = () => {
           />
         </div>
         <div className="form-group">
-          <label>Password:</label>
+          <label htmlFor="password">Password:</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
