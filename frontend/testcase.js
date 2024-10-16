@@ -1,6 +1,3 @@
-Here's the Jest test code for the Login component:
-
-```javascript
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import Login from './Login';
@@ -53,4 +50,3 @@ test('Handle Submit Function Call', () => {
   expect(emailInput.value).toBe('');
   expect(passwordInput.value).toBe('');
 });
-```
