@@ -1,6 +1,3 @@
-Here's the Jest test code for the Login component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Login from './Login';
@@ -76,4 +73,3 @@ test('Console Log on Successful Submission', () => {
   expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
   consoleSpy.mockRestore();
 });
-```
