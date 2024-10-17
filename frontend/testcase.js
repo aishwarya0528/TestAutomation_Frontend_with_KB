@@ -1,6 +1,3 @@
-Here are the 10 test cases based on the provided knowledge base, implemented in Jest:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -113,4 +110,3 @@ test('5.10 Social Media Login Options', () => {
   expect(googleLoginButton).toBeInTheDocument();
   expect(facebookLoginButton).toBeInTheDocument();
 });
-```
