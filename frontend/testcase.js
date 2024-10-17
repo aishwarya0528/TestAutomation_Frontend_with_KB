@@ -1,6 +1,3 @@
-Based on the provided JavaScript code for the Login component and the test cases specified in the 'test_automation_frontend_kb' knowledge base, here are the 10 test cases corresponding to sections 5.1 through 5.10:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -116,6 +113,3 @@ test('submits form with non-existing user credentials', () => {
   fireEvent.click(submitButton);
   expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
 });
-```
-
-These test cases cover the functionality specified in sections 5.1 through 5.10 of the 'test_automation_frontend_kb' knowledge base, focusing on the Login component's behavior and user interactions.
