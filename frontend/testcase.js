@@ -1,6 +1,3 @@
-Based on the information provided in the knowledge base, here are the test cases for the Login.js component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -77,4 +74,3 @@ describe('Login Component', () => {
     expect(handleSubmit).toHaveBeenCalled();
   });
 });
-```
