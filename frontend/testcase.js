@@ -1,112 +1,118 @@
+Here are the 10 test cases for the Login.js component based on sections 5.1 through 5.10:
+
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
-test('5.1 Render Input Fields', () => {
+// 5.1
+test('renders login form with email and password fields', () => {
   render(<Login />);
   expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
   expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
 });
 
-test('5.2 Allow Input in Fields', () => {
+// 5.2
+test('displays error message when submitting empty form', () => {
+  render(<Login />);
+  fireEvent.click(screen.getByRole('button', { name: /login/i }));
+  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+});
+
+// 5.3
+test('clears form fields after successful submission', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText(/email/i);
   const passwordInput = screen.getByLabelText(/password/i);
   
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
-  
-  expect(emailInput).toHaveValue('test@example.com');
-  expect(passwordInput).toHaveValue('password123');
-});
-
-test('5.3 Form Validation', () => {
-  render(<Login />);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-  
-  const emailInput = screen.getByLabelText(/email/i);
-  userEvent.type(emailInput, 'test@example.com');
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-  
-  const passwordInput = screen.getByLabelText(/password/i);
-  userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
-  expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
-});
-
-test('5.4 Error Message Display', () => {
-  render(<Login />);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-});
-
-test('5.5 Successful Form Submission', () => {
-  render(<Login />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
-  userEvent.type(emailInput, 'test@example.com');
-  userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
+  fireEvent.click(screen.getByRole('button', { name: /login/i }));
   
   expect(emailInput).toHaveValue('');
   expect(passwordInput).toHaveValue('');
 });
 
-test('5.6 Invalid Credentials', () => {
+// 5.4
+test('logs email and password to console on form submission', () => {
+  const consoleSpy = jest.spyOn(console, 'log');
   render(<Login />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
   
-  userEvent.type(emailInput, 'invalid@example.com');
-  userEvent.type(passwordInput, 'wrongpassword');
-  fireEvent.click(submitButton);
+  userEvent.type(screen.getByLabelText(/email/i), 'test@example.com');
+  userEvent.type(screen.getByLabelText(/password/i), 'password123');
+  fireEvent.click(screen.getByRole('button', { name: /login/i }));
   
-  expect(screen.getByText('Invalid email or password')).toBeInTheDocument();
+  expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
+  consoleSpy.mockRestore();
 });
 
-test('5.7 Password Visibility Toggle', () => {
+// 5.5
+test('displays error for invalid email format', () => {
   render(<Login />);
-  const passwordInput = screen.getByLabelText(/password/i);
-  const toggleButton = screen.getByRole('button', { name: /toggle password visibility/i });
   
-  expect(passwordInput).toHaveAttribute('type', 'password');
-  fireEvent.click(toggleButton);
-  expect(passwordInput).toHaveAttribute('type', 'text');
-  fireEvent.click(toggleButton);
-  expect(passwordInput).toHaveAttribute('type', 'password');
+  userEvent.type(screen.getByLabelText(/email/i), 'invalidemail');
+  userEvent.type(screen.getByLabelText(/password/i), 'password123');
+  fireEvent.click(screen.getByRole('button', { name: /login/i }));
+  
+  expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
 });
 
-test('5.8 Remember Me Functionality', () => {
+// 5.6
+test('clears error message after successful submission', () => {
   render(<Login />);
-  const rememberMeCheckbox = screen.getByLabelText(/remember me/i);
   
-  expect(rememberMeCheckbox).not.toBeChecked();
-  fireEvent.click(rememberMeCheckbox);
-  expect(rememberMeCheckbox).toBeChecked();
+  fireEvent.click(screen.getByRole('button', { name: /login/i }));
+  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+  
+  userEvent.type(screen.getByLabelText(/email/i), 'test@example.com');
+  userEvent.type(screen.getByLabelText(/password/i), 'password123');
+  fireEvent.click(screen.getByRole('button', { name: /login/i }));
+  
+  expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
 });
 
-test('5.9 Forgot Password Link', () => {
+// 5.7
+test('prevents default form submission', () => {
+  const preventDefaultMock = jest.fn();
   render(<Login />);
-  const forgotPasswordLink = screen.getByText(/forgot password/i);
   
-  expect(forgotPasswordLink).toHaveAttribute('href', '/forgot-password');
+  const form = screen.getByRole('form');
+  fireEvent.submit(form, { preventDefault: preventDefaultMock });
+  
+  expect(preventDefaultMock).toHaveBeenCalled();
 });
 
-test('5.10 Social Media Login Options', () => {
+// 5.8
+test('displays loading state during form submission', () => {
   render(<Login />);
-  const googleLoginButton = screen.getByRole('button', { name: /login with google/i });
-  const facebookLoginButton = screen.getByRole('button', { name: /login with facebook/i });
   
-  expect(googleLoginButton).toBeInTheDocument();
-  expect(facebookLoginButton).toBeInTheDocument();
+  userEvent.type(screen.getByLabelText(/email/i), 'test@example.com');
+  userEvent.type(screen.getByLabelText(/password/i), 'password123');
+  fireEvent.click(screen.getByRole('button', { name: /login/i }));
+  
+  expect(screen.getByText('Loading...')).toBeInTheDocument();
 });
+
+// 5.9
+test('handles network error during login', async () => {
+  render(<Login />);
+  
+  userEvent.type(screen.getByLabelText(/email/i), 'test@example.com');
+  userEvent.type(screen.getByLabelText(/password/i), 'password123');
+  fireEvent.click(screen.getByRole('button', { name: /login/i }));
+  
+  await screen.findByText('Network error. Please try again.');
+});
+
+// 5.10
+test('redirects to dashboard after successful login', async () => {
+  render(<Login />);
+  
+  userEvent.type(screen.getByLabelText(/email/i), 'test@example.com');
+  userEvent.type(screen.getByLabelText(/password/i), 'password123');
+  fireEvent.click(screen.getByRole('button', { name: /login/i }));
+  
+  await screen.findByText('Welcome to your dashboard!');
+});
+```
