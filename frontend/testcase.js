@@ -1,6 +1,3 @@
-Here's the Jest test code based on the provided test cases and the Login component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -110,4 +107,3 @@ describe('Login Component', () => {
     expect(userEvent).toBeDefined();
   });
 });
-```
