@@ -1,6 +1,3 @@
-Here are the 10 test cases as requested, corresponding to sections 5.1 through 5.10:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Login from './Login';
@@ -106,4 +103,3 @@ test('fails when submitting invalid email format', () => {
   fireEvent.click(screen.getByRole('button', { name: /login/i }));
   expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
 });
-```
