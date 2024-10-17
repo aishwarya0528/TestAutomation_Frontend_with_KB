@@ -1,6 +1,3 @@
-Here are the Jest test cases based on the provided Login.js component and the requirements:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -101,4 +98,3 @@ describe('Login Component', () => {
     expect(screen.getByText('Invalid email or password')).toBeInTheDocument();
   });
 });
-```
