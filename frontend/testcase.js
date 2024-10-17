@@ -1,3 +1,6 @@
+Based on the provided JavaScript code for the Login component and the test cases specified in the 'test_automation_frontend_kb' knowledge base, here are the 10 test cases corresponding to sections 5.1 through 5.10:
+
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -6,15 +9,15 @@ import Login from './Login';
 // 5.1
 test('renders login form with email and password inputs', () => {
   render(<Login />);
-  expect(screen.getByLabelText('Email:')).toBeInTheDocument();
-  expect(screen.getByLabelText('Password:')).toBeInTheDocument();
+  expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
 });
 
 // 5.2
 test('allows entering email and password', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  const passwordInput = screen.getByLabelText('Password:');
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
   expect(emailInput).toHaveValue('test@example.com');
@@ -22,9 +25,9 @@ test('allows entering email and password', () => {
 });
 
 // 5.3
-test('displays error message when submitting empty form', () => {
+test('displays error message when form is submitted with empty fields', () => {
   render(<Login />);
-  const submitButton = screen.getByRole('button', { name: 'Login' });
+  const submitButton = screen.getByRole('button', { name: /login/i });
   fireEvent.click(submitButton);
   expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
 });
@@ -32,9 +35,9 @@ test('displays error message when submitting empty form', () => {
 // 5.4
 test('clears form fields after successful submission', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: 'Login' });
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /login/i });
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
   fireEvent.click(submitButton);
@@ -45,11 +48,11 @@ test('clears form fields after successful submission', () => {
 // 5.5
 test('removes error message after successful submission', () => {
   render(<Login />);
-  const submitButton = screen.getByRole('button', { name: 'Login' });
+  const submitButton = screen.getByRole('button', { name: /login/i });
   fireEvent.click(submitButton);
   expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-  const emailInput = screen.getByLabelText('Email:');
-  const passwordInput = screen.getByLabelText('Password:');
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
   fireEvent.click(submitButton);
@@ -58,20 +61,20 @@ test('removes error message after successful submission', () => {
 
 // 5.6
 test('prevents default form submission', () => {
-  const preventDefault = jest.fn();
+  const mockPreventDefault = jest.fn();
   render(<Login />);
   const form = screen.getByRole('form');
-  fireEvent.submit(form, { preventDefault });
-  expect(preventDefault).toHaveBeenCalled();
+  fireEvent.submit(form, { preventDefault: mockPreventDefault });
+  expect(mockPreventDefault).toHaveBeenCalled();
 });
 
 // 5.7
 test('logs email and password to console on successful submission', () => {
   const consoleSpy = jest.spyOn(console, 'log');
   render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: 'Login' });
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /login/i });
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
   fireEvent.click(submitButton);
@@ -79,34 +82,40 @@ test('logs email and password to console on successful submission', () => {
 });
 
 // 5.8
-test('displays custom error message for invalid email format', () => {
+test('submits form with invalid email format', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  const submitButton = screen.getByRole('button', { name: 'Login' });
-  userEvent.type(emailInput, 'invalid-email');
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  userEvent.type(emailInput, 'invalidemail');
+  userEvent.type(passwordInput, 'password123');
   fireEvent.click(submitButton);
-  expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+  expect(screen.getByText('Invalid email format')).toBeInTheDocument();
 });
 
 // 5.9
-test('shows password strength indicator', () => {
+test('submits form with password less than 8 characters', () => {
   render(<Login />);
-  const passwordInput = screen.getByLabelText('Password:');
-  userEvent.type(passwordInput, 'weak');
-  expect(screen.getByText('Password strength: Weak')).toBeInTheDocument();
-  userEvent.clear(passwordInput);
-  userEvent.type(passwordInput, 'strongpassword123');
-  expect(screen.getByText('Password strength: Strong')).toBeInTheDocument();
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'short');
+  fireEvent.click(submitButton);
+  expect(screen.getByText('Password must be at least 8 characters long')).toBeInTheDocument();
 });
 
 // 5.10
-test('disables submit button when form is invalid', () => {
+test('submits form with non-existing user credentials', () => {
   render(<Login />);
-  const submitButton = screen.getByRole('button', { name: 'Login' });
-  expect(submitButton).toBeDisabled();
-  const emailInput = screen.getByLabelText('Email:');
-  const passwordInput = screen.getByLabelText('Password:');
-  userEvent.type(emailInput, 'test@example.com');
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  userEvent.type(emailInput, 'nonexistent@example.com');
   userEvent.type(passwordInput, 'password123');
-  expect(submitButton).toBeEnabled();
+  fireEvent.click(submitButton);
+  expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
 });
+```
+
+These test cases cover the functionality specified in sections 5.1 through 5.10 of the 'test_automation_frontend_kb' knowledge base, focusing on the Login component's behavior and user interactions.
