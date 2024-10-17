@@ -1,6 +1,3 @@
-Here are the 10 test cases corresponding to sections 5.1 through 5.10:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -117,4 +114,3 @@ test('password input field is of type password', () => {
   const passwordInput = screen.getByLabelText(/password/i);
   expect(passwordInput).toHaveAttribute('type', 'password');
 });
-```
