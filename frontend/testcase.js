@@ -1,6 +1,3 @@
-Here are the 10 test cases for the Login.js component based on sections 5.1 through 5.10:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -115,4 +112,3 @@ test('redirects to dashboard after successful login', async () => {
   
   await screen.findByText('Welcome to your dashboard!');
 });
-```
