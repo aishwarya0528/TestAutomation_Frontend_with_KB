@@ -1,6 +1,3 @@
-Here are the 10 test cases based on sections 5.1 to 5.10:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -142,4 +139,3 @@ test('fails to submit form when password doesn\'t match confirm password', () =>
   
   expect(screen.getByText('Passwords do not match')).toBeInTheDocument();
 });
-```
