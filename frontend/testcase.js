@@ -1,6 +1,3 @@
-Here are the 10 test cases based on sections 5.1 to 5.10:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -113,4 +110,3 @@ test('disables submit button when form is invalid', () => {
   userEvent.type(passwordInput, 'password123');
   expect(submitButton).toBeEnabled();
 });
-```
