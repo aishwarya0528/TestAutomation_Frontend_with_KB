@@ -1,6 +1,3 @@
-Here are the 10 test cases based on sections 5.1 to 5.10 from the knowledge base:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Login from './Login';
@@ -118,4 +115,3 @@ test('fails when login credentials are incorrect', () => {
   fireEvent.click(submitButton);
   expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument();
 });
-```
