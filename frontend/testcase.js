@@ -1,6 +1,4 @@
-Based on the provided JavaScript files for the Login.js component and the guidelines from the 'test_automation_frontend_kb' knowledge base, here are the 10 test cases corresponding to sections 5.1 through 5.10:
 
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -116,6 +114,3 @@ test('renders login form without delay', () => {
   
   expect(endTime - startTime).toBeLessThan(100); // Assuming 100ms is an acceptable render time
 });
-```
-
-These 10 test cases cover the specific sections mentioned in the 'test_automation_frontend_kb' knowledge base, focusing on the Login.js component functionality, validation, accessibility, responsiveness, and performance.
