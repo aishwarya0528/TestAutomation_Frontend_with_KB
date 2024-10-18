@@ -1,6 +1,3 @@
-Based on the provided guidelines and the 'integrationWthConfluence' knowledge base, here are the 10 test cases for the Login.js component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -113,6 +110,3 @@ test('5.10 Verify login form accessibility', () => {
   expect(passwordInput).toHaveAttribute('type', 'password');
   expect(screen.getByRole('button', { name: 'Login' })).toHaveAttribute('type', 'submit');
 });
-```
-
-These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'integrationWthConfluence' knowledge base, as per your instructions.
