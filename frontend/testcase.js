@@ -1,103 +1,118 @@
+Based on the provided guidelines and the 'integrationWthConfluence' knowledge base, here are the 10 test cases for the Login.js component:
 
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
-// 5.1 Test user login with valid credentials
-test('user can login with valid credentials', () => {
+test('5.1 Verify login form renders correctly', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  userEvent.type(emailInput, 'valid@example.com');
-  userEvent.type(passwordInput, 'validpassword');
-  fireEvent.click(submitButton);
-  // Add assertion for successful login
+  expect(screen.getByLabelText('Email:')).toBeInTheDocument();
+  expect(screen.getByLabelText('Password:')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
 });
 
-// 5.2 Test user login with invalid credentials
-test('user cannot login with invalid credentials', () => {
+test('5.2 Test email input field', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  userEvent.type(emailInput, 'invalid@example.com');
-  userEvent.type(passwordInput, 'invalidpassword');
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Invalid email or password')).toBeInTheDocument();
+  const emailInput = screen.getByLabelText('Email:');
+  userEvent.type(emailInput, 'test@example.com');
+  expect(emailInput).toHaveValue('test@example.com');
 });
 
-// 5.3 Test empty form submission
-test('empty form submission displays error message', () => {
+test('5.3 Test password input field', () => {
   render(<Login />);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  fireEvent.click(submitButton);
+  const passwordInput = screen.getByLabelText('Password:');
+  userEvent.type(passwordInput, 'password123');
+  expect(passwordInput).toHaveValue('password123');
+});
+
+test('5.4 Verify error message for empty fields', () => {
+  render(<Login />);
+  const loginButton = screen.getByRole('button', { name: 'Login' });
+  fireEvent.click(loginButton);
   expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
 });
 
-// 5.4 Test email format validation
-test('invalid email format displays error message', () => {
+test('5.5 Test successful form submission', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  userEvent.type(emailInput, 'invalidemail');
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Invalid email format')).toBeInTheDocument();
-});
+  const emailInput = screen.getByLabelText('Email:');
+  const passwordInput = screen.getByLabelText('Password:');
+  const loginButton = screen.getByRole('button', { name: 'Login' });
 
-// 5.5 Test password length validation
-test('password less than 8 characters displays error message', () => {
-  render(<Login />);
-  const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  userEvent.type(passwordInput, 'short');
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Password must be at least 8 characters long')).toBeInTheDocument();
-});
-
-// 5.6 Test login button functionality
-test('login button submits the form', () => {
-  render(<Login />);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  const handleSubmit = jest.fn(e => e.preventDefault());
-  submitButton.onclick = handleSubmit;
-  fireEvent.click(submitButton);
-  expect(handleSubmit).toHaveBeenCalledTimes(1);
-});
-
-// 5.7 Test form reset after successful submission
-test('form resets after successful submission', () => {
-  render(<Login />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
+  fireEvent.click(loginButton);
+
   expect(emailInput).toHaveValue('');
   expect(passwordInput).toHaveValue('');
-});
-
-// 5.8 Test error message clearing on input change
-test('error message clears on input change', () => {
-  render(<Login />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-  userEvent.type(emailInput, 't');
   expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
 });
 
-// 5.9 Test login persistence
-test('login persists after page reload', () => {
-  // This test would require mocking localStorage or a similar mechanism
-  // Implementation depends on how login persistence is handled
+test('5.6 Verify form prevents default submission', () => {
+  const preventDefault = jest.fn();
+  render(<Login />);
+  const form = screen.getByRole('form');
+
+  fireEvent.submit(form, { preventDefault });
+
+  expect(preventDefault).toHaveBeenCalled();
 });
 
-// 5.10 Test logout functionality
-test('user can logout', () => {
-  // This test would require implementing and rendering a logout button
-  // Implementation depends on how logout is handled in the application
+test('5.7 Check if entered data is logged to console', () => {
+  const consoleSpy = jest.spyOn(console, 'log');
+  render(<Login />);
+  const emailInput = screen.getByLabelText('Email:');
+  const passwordInput = screen.getByLabelText('Password:');
+  const loginButton = screen.getByRole('button', { name: 'Login' });
+
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(loginButton);
+
+  expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
+  consoleSpy.mockRestore();
 });
+
+test('5.8 Verify error clearing after successful submission', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText('Email:');
+  const passwordInput = screen.getByLabelText('Password:');
+  const loginButton = screen.getByRole('button', { name: 'Login' });
+
+  fireEvent.click(loginButton);
+  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(loginButton);
+
+  expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+});
+
+test('5.9 Test login button is disabled when fields are empty', () => {
+  render(<Login />);
+  const loginButton = screen.getByRole('button', { name: 'Login' });
+  expect(loginButton).toBeDisabled();
+
+  const emailInput = screen.getByLabelText('Email:');
+  const passwordInput = screen.getByLabelText('Password:');
+
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+
+  expect(loginButton).toBeEnabled();
+});
+
+test('5.10 Verify login form accessibility', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText('Email:');
+  const passwordInput = screen.getByLabelText('Password:');
+
+  expect(emailInput).toHaveAttribute('type', 'email');
+  expect(passwordInput).toHaveAttribute('type', 'password');
+  expect(screen.getByRole('button', { name: 'Login' })).toHaveAttribute('type', 'submit');
+});
+```
+
+These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'integrationWthConfluence' knowledge base, as per your instructions.
