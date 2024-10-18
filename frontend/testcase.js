@@ -1,6 +1,3 @@
-Based on the provided Login.js component and the test cases specified in the knowledge base, here are the 10 test cases corresponding to sections 5.1 through 5.10:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -132,6 +129,3 @@ test('displays network error message on submission failure', async () => {
   await screen.findByText('Network error. Please try again later.');
   expect(screen.getByText('Network error. Please try again later.')).toBeInTheDocument();
 });
-```
-
-These 10 test cases correspond exactly to sections 5.1 through 5.10 of the knowledge base, as requested.
