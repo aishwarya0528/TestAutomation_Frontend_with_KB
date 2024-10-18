@@ -1,6 +1,3 @@
-Based on the provided requirements, here are the 10 test cases specifically mentioned in the 'integrationWthConfluence' knowledge base for the Login.js component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -106,6 +103,3 @@ test('5.10 Disables submit button while processing', () => {
   expect(submitButton).toBeDisabled();
   expect(submitButton).toHaveTextContent('Processing...');
 });
-```
-
-These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'integrationWthConfluence' knowledge base, as requested.
