@@ -1,6 +1,3 @@
-Based on the requirements from the 'integrationWthConfluence' knowledge base, here are the 10 test cases for the Login.js component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -143,6 +140,3 @@ test('login with two-factor authentication', () => {
 
   expect(screen.getByText('Enter two-factor authentication code')).toBeInTheDocument();
 });
-```
-
-These test cases cover the scenarios mentioned in sections 5.1 through 5.10 of the 'integrationWthConfluence' knowledge base, focusing on various login scenarios and error handling.
