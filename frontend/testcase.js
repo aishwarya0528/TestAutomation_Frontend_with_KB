@@ -1,6 +1,3 @@
-Based on the 'integrationWthConfluence' knowledge base sections 5.1 through 5.10, here are the 10 test cases for the Login.js component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -106,6 +103,3 @@ test('5.10 - Fails when login credentials are incorrect', () => {
   fireEvent.click(submitButton);
   expect(screen.getByText('Invalid email or password')).toBeInTheDocument();
 });
-```
-
-These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'integrationWthConfluence' knowledge base, as requested.
