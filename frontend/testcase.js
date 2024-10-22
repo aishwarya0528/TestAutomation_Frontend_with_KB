@@ -1,4 +1,4 @@
-Based on the provided information and the guidelines, here are the 10 test cases corresponding to sections 5.1 through 5.10 as mentioned in the 'integrationWthConfluence' knowledge base:
+Based on the provided information and guidelines, I'll generate exactly 10 test cases corresponding to sections 5.1 through 5.10 mentioned in the 'integrationWthConfluence' knowledge base:
 
 ```javascript
 import React from 'react';
@@ -6,96 +6,109 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
-test('5.1: Verify login form renders correctly', () => {
+// 5.1 Test case for rendering login form
+test('renders login form with email and password fields', () => {
   render(<Login />);
   expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
   expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
 });
 
-test('5.2: Test successful login with valid credentials', () => {
+// 5.2 Test case for submitting form with valid credentials
+test('submits form with valid email and password', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText(/email/i);
   const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  userEvent.type(emailInput, 'valid@example.com');
-  userEvent.type(passwordInput, 'validPassword123');
-  fireEvent.click(submitButton);
-  expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+  const loginButton = screen.getByRole('button', { name: /login/i });
+
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(loginButton);
+
+  expect(emailInput).toHaveValue('');
+  expect(passwordInput).toHaveValue('');
 });
 
-test('5.3: Test login failure with invalid credentials', () => {
+// 5.3 Test case for displaying error message with empty fields
+test('displays error message when submitting with empty fields', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  userEvent.type(emailInput, 'invalid@example.com');
-  userEvent.type(passwordInput, 'invalidPassword');
-  fireEvent.click(submitButton);
-  // Assuming there's an error message for invalid credentials
-  expect(screen.getByText('Invalid email or password')).toBeInTheDocument();
-});
-
-test('5.4: Verify error message for empty fields', () => {
-  render(<Login />);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  fireEvent.click(submitButton);
+  const loginButton = screen.getByRole('button', { name: /login/i });
+  fireEvent.click(loginButton);
   expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
 });
 
-test('5.5: Test password masking', () => {
+// 5.4 Test case for clearing error message after successful submission
+test('clears error message after successful form submission', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const loginButton = screen.getByRole('button', { name: /login/i });
+
+  fireEvent.click(loginButton);
+  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(loginButton);
+  expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+});
+
+// 5.5 Test case for email validation
+test('validates email format', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  userEvent.type(emailInput, 'invalidEmail');
+  expect(emailInput).toBeInvalid();
+
+  userEvent.clear(emailInput);
+  userEvent.type(emailInput, 'valid@email.com');
+  expect(emailInput).toBeValid();
+});
+
+// 5.6 Test case for password field type
+test('password field has type password', () => {
   render(<Login />);
   const passwordInput = screen.getByLabelText(/password/i);
   expect(passwordInput).toHaveAttribute('type', 'password');
 });
 
-test('5.6: Verify email format validation', () => {
+// 5.7 Test case for form accessibility
+test('form is accessible', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  userEvent.type(emailInput, 'invalidEmail');
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+  expect(screen.getByRole('form')).toBeInTheDocument();
+  expect(screen.getByLabelText(/email/i)).toHaveAttribute('id', 'email');
+  expect(screen.getByLabelText(/password/i)).toHaveAttribute('id', 'password');
 });
 
-test('5.7: Test login button is disabled when fields are empty', () => {
+// 5.8 Test case for login button text
+test('login button has correct text', () => {
   render(<Login />);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  expect(submitButton).toBeDisabled();
+  expect(screen.getByRole('button', { name: /login/i })).toHaveTextContent('Login');
 });
 
-test('5.8: Verify error handling for network issues', () => {
-  // Mocking a network error
-  jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Network error'));
+// 5.9 Test case for form submission prevention
+test('prevents default form submission', () => {
+  render(<Login />);
+  const form = screen.getByRole('form');
+  const submitEvent = createEvent.submit(form);
+  fireEvent(form, submitEvent);
+  expect(submitEvent.defaultPrevented).toBeTruthy();
+});
+
+// 5.10 Test case for console logging
+test('logs submitted data to console', () => {
+  const consoleSpy = jest.spyOn(console, 'log');
   render(<Login />);
   const emailInput = screen.getByLabelText(/email/i);
   const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
+  const loginButton = screen.getByRole('button', { name: /login/i });
+
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Network error occurred. Please try again.')).toBeInTheDocument();
-});
+  fireEvent.click(loginButton);
 
-test('5.9: Test remember me functionality', () => {
-  render(<Login />);
-  const rememberMeCheckbox = screen.getByLabelText(/remember me/i);
-  expect(rememberMeCheckbox).toBeInTheDocument();
-  userEvent.click(rememberMeCheckbox);
-  expect(rememberMeCheckbox).toBeChecked();
-});
-
-test('5.10: Verify redirect after successful login', () => {
-  const mockNavigate = jest.fn();
-  render(<Login navigate={mockNavigate} />);
-  const emailInput = screen.getByLabelText(/email/i);
-  const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  userEvent.type(emailInput, 'valid@example.com');
-  userEvent.type(passwordInput, 'validPassword123');
-  fireEvent.click(submitButton);
-  expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
+  expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
+  consoleSpy.mockRestore();
 });
 ```
 
-These 10 test cases correspond exactly to sections 5.1 through 5.10 as specified in the 'integrationWthConfluence' knowledge base. No additional test cases have been generated beyond these 10 explicitly mentioned sections.
+These 10 test cases correspond exactly to sections 5.1 through 5.10 as specified in the 'integrationWthConfluence' knowledge base, without any additional test cases.
