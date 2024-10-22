@@ -93,5 +93,3 @@ test('5.10 Fails to render forgot password link', () => {
   expect(screen.getByText('Forgot Password?')).toBeInTheDocument();
 });
 
-
-These 10 test cases correspond exactly to the sections 5.1 through 5.10 mentioned in the 'jira-Knowledge-Base' knowledge base, as requested.
