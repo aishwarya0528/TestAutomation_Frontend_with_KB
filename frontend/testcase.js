@@ -1,4 +1,4 @@
-Based on the provided information and the specific requirements from the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases for the Login.js component:
+Based on the provided guidelines and the knowledge base, here are the 10 test cases for the Login.js component:
 
 ```javascript
 import React from 'react';
@@ -6,34 +6,30 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
-test('5.1 Verify that the login form renders correctly', () => {
+test('renders login form with email and password inputs', () => {
   render(<Login />);
   expect(screen.getByLabelText('Email:')).toBeInTheDocument();
   expect(screen.getByLabelText('Password:')).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
 });
 
-test('5.2 Check if email input accepts valid email addresses', () => {
+test('allows entering email and password', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
-  userEvent.type(emailInput, 'test@example.com');
-  expect(emailInput).toHaveValue('test@example.com');
-});
-
-test('5.3 Ensure password input masks the entered characters', () => {
-  render(<Login />);
   const passwordInput = screen.getByLabelText('Password:');
-  expect(passwordInput).toHaveAttribute('type', 'password');
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  expect(emailInput).toHaveValue('test@example.com');
+  expect(passwordInput).toHaveValue('password123');
 });
 
-test('5.4 Verify error message displays for empty form submission', () => {
+test('displays error message when submitting empty form', () => {
   render(<Login />);
   const submitButton = screen.getByRole('button', { name: 'Login' });
   fireEvent.click(submitButton);
   expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
 });
 
-test('5.5 Check if form clears after successful submission', () => {
+test('clears form fields after successful submission', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
@@ -45,7 +41,7 @@ test('5.5 Check if form clears after successful submission', () => {
   expect(passwordInput).toHaveValue('');
 });
 
-test('5.6 Verify error message clears after successful submission', () => {
+test('removes error message after successful submission', () => {
   render(<Login />);
   const submitButton = screen.getByRole('button', { name: 'Login' });
   fireEvent.click(submitButton);
@@ -58,7 +54,7 @@ test('5.6 Verify error message clears after successful submission', () => {
   expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
 });
 
-test('5.7 Check if form prevents submission with invalid email', () => {
+test('does not submit form with invalid email', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
@@ -70,7 +66,7 @@ test('5.7 Check if form prevents submission with invalid email', () => {
   expect(passwordInput).toHaveValue('password123');
 });
 
-test('5.8 Verify successful login attempt logs credentials', () => {
+test('logs email and password to console on successful submission', () => {
   const consoleSpy = jest.spyOn(console, 'log');
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
@@ -82,16 +78,21 @@ test('5.8 Verify successful login attempt logs credentials', () => {
   expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
 });
 
-test('5.9 Check if login form is accessible', () => {
-  render(<Login />);
-  expect(screen.getByLabelText('Email:')).toHaveAttribute('id', 'email');
-  expect(screen.getByLabelText('Password:')).toHaveAttribute('id', 'password');
-});
-
-test('5.10 Verify form styling classes are applied', () => {
+test('renders login form with correct CSS classes', () => {
   render(<Login />);
   expect(screen.getByRole('form')).toHaveClass('login-form');
   expect(screen.getByRole('button', { name: 'Login' })).toHaveClass('login-button');
+});
+
+test('displays placeholder text for email and password inputs', () => {
+  render(<Login />);
+  expect(screen.getByLabelText('Email:')).toHaveAttribute('placeholder', 'Enter your email');
+  expect(screen.getByLabelText('Password:')).toHaveAttribute('placeholder', 'Enter your password');
+});
+
+test('renders login header', () => {
+  render(<Login />);
+  expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();
 });
 ```
 
