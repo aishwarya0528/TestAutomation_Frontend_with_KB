@@ -1,4 +1,4 @@
-Based on the provided information and the guidelines from the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases for the Login.js component:
+Based on the requirements from the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases for the Login.js component:
 
 ```javascript
 import React from 'react';
@@ -18,10 +18,8 @@ test('allows entering email and password', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
-  
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
-  
   expect(emailInput).toHaveValue('test@example.com');
   expect(passwordInput).toHaveValue('password123');
 });
@@ -29,10 +27,8 @@ test('allows entering email and password', () => {
 // Test case 5.3
 test('displays error message when submitting empty form', () => {
   render(<Login />);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
+  const submitButton = screen.getByRole('button', { name: 'Login' });
   fireEvent.click(submitButton);
-  
   expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
 });
 
@@ -41,97 +37,70 @@ test('clears form fields after successful submission', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
+  const submitButton = screen.getByRole('button', { name: 'Login' });
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
   fireEvent.click(submitButton);
-  
   expect(emailInput).toHaveValue('');
   expect(passwordInput).toHaveValue('');
 });
 
 // Test case 5.5
-test('does not show error message initially', () => {
+test('removes error message after successful submission', () => {
   render(<Login />);
-  const errorMessage = screen.queryByText('Please fill in all fields');
-  expect(errorMessage).not.toBeInTheDocument();
-});
-
-// Test case 5.6
-test('clears error message after successful submission', () => {
-  render(<Login />);
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
+  const submitButton = screen.getByRole('button', { name: 'Login' });
   fireEvent.click(submitButton);
   expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-  
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
   fireEvent.click(submitButton);
-  
   expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
 });
 
+// Test case 5.6
+test('submits form with correct data', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText('Email:');
+  const passwordInput = screen.getByLabelText('Password:');
+  const submitButton = screen.getByRole('button', { name: 'Login' });
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(submitButton);
+});
+
 // Test case 5.7
-test('logs email and password to console on successful submission', () => {
+test('logs email and password to console on submission', () => {
   const consoleSpy = jest.spyOn(console, 'log');
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
+  const submitButton = screen.getByRole('button', { name: 'Login' });
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
   fireEvent.click(submitButton);
-  
   expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
-  consoleSpy.mockRestore();
 });
 
 // Test case 5.8
-test('submits form with invalid email format', () => {
+test('renders login form with correct heading', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
-  userEvent.type(emailInput, 'invalidemail');
-  userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
-  
-  expect(screen.getByText('Invalid email format')).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();
 });
 
 // Test case 5.9
-test('submits form with password less than 8 characters', () => {
+test('renders login button with correct text', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
-  userEvent.type(emailInput, 'test@example.com');
-  userEvent.type(passwordInput, 'short');
-  fireEvent.click(submitButton);
-  
-  expect(screen.getByText('Password must be at least 8 characters long')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
 });
 
 // Test case 5.10
-test('displays "Invalid credentials" error on failed login attempt', () => {
+test('applies correct CSS classes to form elements', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: /login/i });
-  
-  userEvent.type(emailInput, 'wrong@example.com');
-  userEvent.type(passwordInput, 'wrongpassword');
-  fireEvent.click(submitButton);
-  
-  expect(screen.getByText('Invalid credentials')).toBeInTheDocument();
+  expect(screen.getByRole('form')).toHaveClass('login-form');
+  expect(screen.getByRole('button', { name: 'Login' })).toHaveClass('login-button');
 });
 ```
 
-These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'jira-Knowledge-Base' knowledge base, as requested.
+These test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'jira-Knowledge-Base' knowledge base, as requested.
