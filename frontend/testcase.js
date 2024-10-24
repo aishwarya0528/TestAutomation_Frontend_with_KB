@@ -1,6 +1,3 @@
-Based on the provided Login.js component and the requirements from the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases corresponding to sections 5.1 through 5.10:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -137,6 +134,3 @@ test('displays success message after submission', () => {
   
   expect(screen.getByText('Login successful')).toBeInTheDocument();
 });
-```
-
-These 10 test cases correspond exactly to the requirements specified in sections 5.1 through 5.10 of the 'jira-Knowledge-Base' knowledge base.
