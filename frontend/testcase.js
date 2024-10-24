@@ -1,6 +1,3 @@
-Based on the requirements specified in the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases for the Login.js component:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -101,6 +98,3 @@ test('5.10 Show password toggle functionality', () => {
   fireEvent.click(showPasswordButton);
   expect(passwordInput).toHaveAttribute('type', 'text');
 });
-```
-
-These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'jira-Knowledge-Base' knowledge base, as requested.
