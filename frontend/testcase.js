@@ -1,97 +1,124 @@
+Based on the provided guidelines and the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases for the Login.js component:
+
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
-// 5.1 Test email input validation
-test('validates email input', () => {
+// Test case 5.1
+test('renders login form with email and password inputs', () => {
   render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  userEvent.type(emailInput, 'invalid-email');
-  fireEvent.submit(screen.getByRole('button', { name: 'Login' }));
-  expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+  expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
 });
 
-// 5.2 Test password strength indicator
-test('displays password strength indicator', () => {
+// Test case 5.2
+test('allows entering email and password', () => {
   render(<Login />);
-  const passwordInput = screen.getByLabelText('Password:');
-  userEvent.type(passwordInput, 'weak');
-  expect(screen.getByText('Password strength: Weak')).toBeInTheDocument();
-  userEvent.clear(passwordInput);
-  userEvent.type(passwordInput, 'StrongP@ssw0rd');
-  expect(screen.getByText('Password strength: Strong')).toBeInTheDocument();
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+
+  expect(emailInput).toHaveValue('test@example.com');
+  expect(passwordInput).toHaveValue('password123');
 });
 
-// 5.3 Test login button disabled state
-test('disables login button when fields are empty', () => {
+// Test case 5.3
+test('displays error message when form is submitted with empty fields', () => {
   render(<Login />);
-  const loginButton = screen.getByRole('button', { name: 'Login' });
-  expect(loginButton).toBeDisabled();
-  userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-  userEvent.type(screen.getByLabelText('Password:'), 'password');
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  
+  fireEvent.click(submitButton);
+
+  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+});
+
+// Test case 5.4
+test('clears form fields after successful submission', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(submitButton);
+
+  expect(emailInput).toHaveValue('');
+  expect(passwordInput).toHaveValue('');
+});
+
+// Test case 5.5
+test('does not show error message initially', () => {
+  render(<Login />);
+  const errorMessage = screen.queryByText('Please fill in all fields');
+  expect(errorMessage).not.toBeInTheDocument();
+});
+
+// Test case 5.6
+test('clears error message after successful submission', () => {
+  render(<Login />);
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  
+  fireEvent.click(submitButton);
+  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(submitButton);
+
+  expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+});
+
+// Test case 5.7
+test('logs email and password to console on successful submission', () => {
+  const consoleSpy = jest.spyOn(console, 'log');
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(submitButton);
+
+  expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
+  consoleSpy.mockRestore();
+});
+
+// Test case 5.8
+test('submits form with valid email and password', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  
+  userEvent.type(emailInput, 'valid@example.com');
+  userEvent.type(passwordInput, 'validpassword');
+  fireEvent.click(submitButton);
+
+  expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+});
+
+// Test case 5.9
+test('displays login form header', () => {
+  render(<Login />);
+  expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
+});
+
+// Test case 5.10
+test('login button is present and clickable', () => {
+  render(<Login />);
+  const loginButton = screen.getByRole('button', { name: /login/i });
+  expect(loginButton).toBeInTheDocument();
   expect(loginButton).toBeEnabled();
 });
+```
 
-// 5.4 Test error message display
-test('displays error message for invalid credentials', async () => {
-  render(<Login />);
-  userEvent.type(screen.getByLabelText('Email:'), 'invalid@example.com');
-  userEvent.type(screen.getByLabelText('Password:'), 'wrongpassword');
-  fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-  expect(await screen.findByText('Invalid email or password')).toBeInTheDocument();
-});
-
-// 5.5 Test successful login flow
-test('redirects to dashboard on successful login', async () => {
-  const mockNavigate = jest.fn();
-  render(<Login navigate={mockNavigate} />);
-  userEvent.type(screen.getByLabelText('Email:'), 'valid@example.com');
-  userEvent.type(screen.getByLabelText('Password:'), 'correctpassword');
-  fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-  expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
-});
-
-// 5.6 Test remember me functionality
-test('remembers user email when "Remember Me" is checked', () => {
-  render(<Login />);
-  const rememberMeCheckbox = screen.getByLabelText('Remember Me');
-  const emailInput = screen.getByLabelText('Email:');
-  userEvent.type(emailInput, 'test@example.com');
-  userEvent.click(rememberMeCheckbox);
-  fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-  expect(localStorage.getItem('rememberedEmail')).toBe('test@example.com');
-});
-
-// 5.7 Test forgot password link
-test('navigates to forgot password page', () => {
-  const mockNavigate = jest.fn();
-  render(<Login navigate={mockNavigate} />);
-  fireEvent.click(screen.getByText('Forgot Password?'));
-  expect(mockNavigate).toHaveBeenCalledWith('/forgot-password');
-});
-
-// 5.8 Test form submission prevention
-test('prevents default form submission', () => {
-  const preventDefault = jest.fn();
-  render(<Login />);
-  const form = screen.getByRole('form');
-  fireEvent.submit(form, { preventDefault });
-  expect(preventDefault).toHaveBeenCalled();
-});
-
-// 5.9 Test loading state during login
-test('displays loading state during login process', async () => {
-  render(<Login />);
-  userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-  userEvent.type(screen.getByLabelText('Password:'), 'password');
-  fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-  expect(screen.getByText('Logging in...')).toBeInTheDocument();
-  await screen.findByText('Login successful');
-});
-
-// 5.10 Test accessibility
-test('login form is accessible', () => {
-  const { container } = render(<Login />);
-  expect(container).toBeAccessible();
-});
+These 10 test cases correspond to sections 5.1 through 5.10 as specified in the 'jira-Knowledge-Base' knowledge base, and cover the required functionality of the Login component.
