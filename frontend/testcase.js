@@ -1,6 +1,3 @@
-Based on the provided Login.js component and the guidelines from the 'jira-Knowledge-Base', here are the 10 test cases corresponding to sections 5.1 through 5.10:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -141,6 +138,3 @@ test('fails to submit form with non-matching passwords', () => {
 
   expect(screen.getByText('Passwords do not match')).toBeInTheDocument();
 });
-```
-
-These 10 test cases correspond exactly to sections 5.1 through 5.10 as mentioned in the 'jira-Knowledge-Base' knowledge base, without any additional test cases.
