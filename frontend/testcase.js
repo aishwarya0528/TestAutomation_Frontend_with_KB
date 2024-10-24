@@ -1,6 +1,4 @@
-Based on the provided JavaScript file for the Login.js component and the test cases mentioned in the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases corresponding to sections 5.1 through 5.10:
 
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -115,6 +113,3 @@ test('allows submission with spaces in email (should fail)', () => {
   expect(emailInput).toHaveValue('');
   expect(passwordInput).toHaveValue('');
 });
-```
-
-These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'jira-Knowledge-Base' knowledge base, as requested.
