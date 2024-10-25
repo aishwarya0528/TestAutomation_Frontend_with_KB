@@ -1,6 +1,4 @@
-Based on the provided JavaScript files and the guidelines from the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases for the Login.js component:
 
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -112,6 +110,3 @@ test('disables login button during form submission', async () => {
   await screen.findByText('Login successful');
   expect(loginButton).toBeEnabled();
 });
-```
-
-These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'jira-Knowledge-Base' knowledge base, as requested.
