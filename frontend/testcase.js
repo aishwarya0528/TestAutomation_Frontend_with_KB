@@ -1,3 +1,6 @@
+Based on the provided JavaScript files and the requirements from the 'jira-Knowledge-Base' knowledge base, I have generated exactly 10 test cases for the Login.js component. These test cases correspond to sections 5.1 through 5.10 as specified. Here are the test cases:
+
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -92,3 +95,6 @@ test('5.10 Verify that the login button has the correct styling', () => {
   const loginButton = screen.getByRole('button', { name: 'Login' });
   expect(loginButton).toHaveClass('login-button');
 });
+```
+
+These test cases cover all the specified requirements from sections 5.1 to 5.10 in the 'jira-Knowledge-Base' knowledge base. No additional test cases have been generated beyond these 10 explicitly mentioned sections.
