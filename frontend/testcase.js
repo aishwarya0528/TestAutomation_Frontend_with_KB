@@ -1,4 +1,4 @@
-Based on the requirements specified in the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases for the Login.js component:
+Based on the provided JavaScript file for the Login.js component and the test cases mentioned in the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases corresponding to sections 5.1 through 5.10:
 
 ```javascript
 import React from 'react';
@@ -6,13 +6,15 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
-test('5.1 Renders login form with email and password inputs', () => {
+// 5.1
+test('renders login form with email and password inputs', () => {
   render(<Login />);
   expect(screen.getByLabelText('Email:')).toBeInTheDocument();
   expect(screen.getByLabelText('Password:')).toBeInTheDocument();
 });
 
-test('5.2 Allows entering email and password', () => {
+// 5.2
+test('allows entering email and password', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
@@ -22,88 +24,101 @@ test('5.2 Allows entering email and password', () => {
   expect(passwordInput).toHaveValue('password123');
 });
 
-test('5.3 Displays error message when submitting empty form', () => {
+// 5.3
+test('displays error message for empty fields', () => {
   render(<Login />);
-  const submitButton = screen.getByRole('button', { name: 'Login' });
-  fireEvent.click(submitButton);
+  const loginButton = screen.getByRole('button', { name: 'Login' });
+  fireEvent.click(loginButton);
   expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
 });
 
-test('5.4 Clears form fields after successful submission', () => {
+// 5.4
+test('clears form fields after successful submission', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: 'Login' });
+  const loginButton = screen.getByRole('button', { name: 'Login' });
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
+  fireEvent.click(loginButton);
   expect(emailInput).toHaveValue('');
   expect(passwordInput).toHaveValue('');
 });
 
-test('5.5 Removes error message after successful submission', () => {
+// 5.5
+test('removes error message after successful submission', () => {
   render(<Login />);
-  const submitButton = screen.getByRole('button', { name: 'Login' });
-  fireEvent.click(submitButton);
+  const loginButton = screen.getByRole('button', { name: 'Login' });
+  fireEvent.click(loginButton);
   expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
+  fireEvent.click(loginButton);
   expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
 });
 
-test('5.6 Submits form with entered email and password', () => {
-  render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: 'Login' });
-  userEvent.type(emailInput, 'test@example.com');
-  userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
+// 5.6
+test('prevents default form submission', () => {
+  const { container } = render(<Login />);
+  const form = container.querySelector('form');
+  const submitEvent = new Event('submit');
+  jest.spyOn(submitEvent, 'preventDefault');
+  form.dispatchEvent(submitEvent);
+  expect(submitEvent.preventDefault).toHaveBeenCalled();
 });
 
-test('5.7 Logs entered email and password to console on submission', () => {
+// 5.7
+test('logs email and password to console on successful submission', () => {
   const consoleSpy = jest.spyOn(console, 'log');
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: 'Login' });
+  const loginButton = screen.getByRole('button', { name: 'Login' });
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
+  fireEvent.click(loginButton);
   expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
 });
 
-test('5.8 Fails when trying to submit with only email filled', () => {
-  render(<Login />);
-  const emailInput = screen.getByLabelText('Email:');
-  const submitButton = screen.getByRole('button', { name: 'Login' });
-  userEvent.type(emailInput, 'test@example.com');
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-});
-
-test('5.9 Fails when trying to submit with only password filled', () => {
-  render(<Login />);
-  const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: 'Login' });
-  userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
-  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-});
-
-test('5.10 Fails when submitting invalid email format', () => {
+// 5.8
+test('submits form with invalid email format', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
   const passwordInput = screen.getByLabelText('Password:');
-  const submitButton = screen.getByRole('button', { name: 'Login' });
+  const loginButton = screen.getByRole('button', { name: 'Login' });
   userEvent.type(emailInput, 'invalidemail');
   userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
+  fireEvent.click(loginButton);
   expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+});
+
+// 5.9
+test('submits form with password less than 8 characters', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText('Email:');
+  const passwordInput = screen.getByLabelText('Password:');
+  const loginButton = screen.getByRole('button', { name: 'Login' });
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'pass');
+  fireEvent.click(loginButton);
+  expect(screen.getByText('Password must be at least 8 characters long')).toBeInTheDocument();
+});
+
+// 5.10
+test('submits form with non-matching passwords', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText('Email:');
+  const passwordInput = screen.getByLabelText('Password:');
+  const confirmPasswordInput = screen.getByLabelText('Confirm Password:');
+  const loginButton = screen.getByRole('button', { name: 'Login' });
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  userEvent.type(confirmPasswordInput, 'password321');
+  fireEvent.click(loginButton);
+  expect(screen.getByText('Passwords do not match')).toBeInTheDocument();
 });
 ```
 
-These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'jira-Knowledge-Base' knowledge base, as requested.
+These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'jira-Knowledge-Base' knowledge base.
