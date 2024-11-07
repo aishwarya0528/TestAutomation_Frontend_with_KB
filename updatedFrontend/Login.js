@@ -1,30 +1,19 @@
-import React, { useState, useCallback } from 'react'; // Added useCallback for optimization
+import React, { useState, useCallback } from 'react'; // Added useCallback for performance optimization
+import PropTypes from 'prop-types'; // Added PropTypes for type checking
 
-// Use TypeScript for better type checking
-interface LoginFormData {
-  email: string;
-  password: string;
-}
+// Use arrow function for consistent style
+const Login = ({ onLogin }) => { // Added onLogin prop for better component communication
+  const [formData, setFormData] = useState({ email: '', password: '' }); // Combined state into a single object
+  const [errorMessage, setErrorMessage] = useState('');
 
-const Login: React.FC = () => {
-  // Use a single state object for form data
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
-  });
-  const [errorMessage, setErrorMessage] = useState<string>('');
-
-  // Use useCallback to memoize the handleChange function
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  // Use useCallback to memoize the handler
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData(prevData => ({ ...prevData, [name]: value }));
   }, []);
 
-  // Use useCallback to memoize the handleSubmit function
-  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+  // Use useCallback to memoize the submit handler
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     const { email, password } = formData;
 
@@ -33,13 +22,13 @@ const Login: React.FC = () => {
       return;
     }
 
-    // TODO: Implement actual login logic here
-    console.log('Email:', email, 'Password:', password);
+    // Use the onLogin prop instead of console.log
+    onLogin(email, password);
 
-    // Clear form data and error message
+    // Reset form and error message
     setFormData({ email: '', password: '' });
     setErrorMessage('');
-  }, [formData]);
+  }, [formData, onLogin]);
 
   return (
     <div className="login-container">
@@ -56,7 +45,6 @@ const Login: React.FC = () => {
             onChange={handleChange}
             required
             placeholder="Enter your email"
-            autoComplete="username" // Added for better autofill support
           />
         </div>
         <div className="form-group">
@@ -69,14 +57,18 @@ const Login: React.FC = () => {
             onChange={handleChange}
             required
             placeholder="Enter your password"
-            autoComplete="current-password" // Added for better autofill support
-            minLength={8} // Added minimum length requirement
+            autoComplete="current-password" // Added for better security and user experience
           />
         </div>
         <button type="submit" className="login-button">Login</button>
       </form>
     </div>
   );
+};
+
+// Add PropTypes for type checking
+Login.propTypes = {
+  onLogin: PropTypes.func.isRequired,
 };
 
 export default Login;
