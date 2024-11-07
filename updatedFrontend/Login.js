@@ -1,35 +1,45 @@
-import React, { useState, useCallback } from 'react'; // Added useCallback for performance optimization
-import PropTypes from 'prop-types'; // Added PropTypes for type checking
+import React, { useState, useCallback } from 'react'; // Added useCallback for optimization
 
-// Use a functional component with arrow function syntax
-const Login = ({ onLogin }) => {
-  // Use object destructuring for state to group related states
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const [errorMessage, setErrorMessage] = useState('');
+// Use TypeScript for better type checking
+interface LoginFormData {
+  email: string;
+  password: string;
+}
 
-  // Use useCallback to memoize the handler function
-  const handleChange = useCallback((e) => {
+const Login: React.FC = () => {
+  // Use a single state object for form data
+  const [formData, setFormData] = useState<LoginFormData>({
+    email: '',
+    password: '',
+  });
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  // Use useCallback to memoize the handleChange function
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setCredentials(prev => ({ ...prev, [name]: value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   }, []);
 
-  // Use useCallback to memoize the submit function
-  const handleSubmit = useCallback((e) => {
+  // Use useCallback to memoize the handleSubmit function
+  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { email, password } = credentials;
+    const { email, password } = formData;
 
     if (!email || !password) {
       setErrorMessage('Please fill in all fields');
       return;
     }
 
-    // Use a prop function for login instead of console.log
-    onLogin(email, password);
+    // TODO: Implement actual login logic here
+    console.log('Email:', email, 'Password:', password);
 
-    // Reset form and error message
-    setCredentials({ email: '', password: '' });
+    // Clear form data and error message
+    setFormData({ email: '', password: '' });
     setErrorMessage('');
-  }, [credentials, onLogin]);
+  }, [formData]);
 
   return (
     <div className="login-container">
@@ -42,11 +52,11 @@ const Login = ({ onLogin }) => {
             id="email"
             name="email" // Added name attribute for handleChange
             type="email"
-            value={credentials.email}
+            value={formData.email}
             onChange={handleChange}
             required
             placeholder="Enter your email"
-            autoComplete="username" // Added autoComplete for better UX and security
+            autoComplete="username" // Added for better autofill support
           />
         </div>
         <div className="form-group">
@@ -55,22 +65,18 @@ const Login = ({ onLogin }) => {
             id="password"
             name="password" // Added name attribute for handleChange
             type="password"
-            value={credentials.password}
+            value={formData.password}
             onChange={handleChange}
             required
             placeholder="Enter your password"
-            autoComplete="current-password" // Added autoComplete for better UX and security
+            autoComplete="current-password" // Added for better autofill support
+            minLength={8} // Added minimum length requirement
           />
         </div>
         <button type="submit" className="login-button">Login</button>
       </form>
     </div>
   );
-};
-
-// Add PropTypes for type checking
-Login.propTypes = {
-  onLogin: PropTypes.func.isRequired,
 };
 
 export default Login;
