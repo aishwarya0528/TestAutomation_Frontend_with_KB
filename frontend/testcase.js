@@ -1,4 +1,6 @@
+Based on the provided requirements and modifications, here are the final test cases for the Login component:
 
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -80,7 +82,7 @@ test('logs email and password to console on successful submission', () => {
   expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
 });
 
-// 5.8 Test case for submitting form with invalid email format
+// Modified: Test case 5.8 - Validation for invalid email format
 test('submits form with invalid email format', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
@@ -92,7 +94,7 @@ test('submits form with invalid email format', () => {
   expect(screen.getByText('Invalid email format')).toBeInTheDocument();
 });
 
-// 5.9 Test case for submitting form with short password
+// Modified: Test case 5.9 - Validation for password length (minimum 8 characters)
 test('submits form with short password', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
@@ -104,7 +106,7 @@ test('submits form with short password', () => {
   expect(screen.getByText('Password must be at least 8 characters long')).toBeInTheDocument();
 });
 
-// 5.10 Test case for displaying network error message
+// Modified: Test case 5.10 - Handling for network errors
 test('displays network error message', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText('Email:');
@@ -115,3 +117,6 @@ test('displays network error message', () => {
   fireEvent.click(submitButton);
   expect(screen.getByText('Network error. Please try again later.')).toBeInTheDocument();
 });
+```
+
+These test cases incorporate all the modifications specified in the comments.txt file, including the new validations for email format and password length, as well as handling for network errors. The modified test cases are marked with comments as requested.
