@@ -1,6 +1,4 @@
-Based on the provided JavaScript files and the guidelines from the 'jira-Knowledge-Base' knowledge base, here are the 10 test cases corresponding to sections 5.1 through 5.10:
 
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -117,6 +115,3 @@ test('displays network error message', () => {
   fireEvent.click(submitButton);
   expect(screen.getByText('Network error. Please try again later.')).toBeInTheDocument();
 });
-```
-
-These 10 test cases correspond exactly to sections 5.1 through 5.10 mentioned in the 'jira-Knowledge-Base' knowledge base, as requested.
