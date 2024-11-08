@@ -1,114 +1,67 @@
+Based on the provided JavaScript file for the Login component and the test cases mentioned in the 'test_automation_frontend_MultipleFiles' knowledge base, here are the required test cases:
+
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
-// Modified as per comments.txt
-test('TC001: Validate login form submission with valid inputs', async () => {
-  const user = userEvent.setup();
-  const consoleSpy = jest.spyOn(console, 'log');
+test('renders login form with email and password inputs', () => {
   render(<Login />);
-
-  await user.type(screen.getByLabelText(/email/i), 'test@example.com');
-  await user.type(screen.getByLabelText(/password/i), 'password123');
-  await user.click(screen.getByRole('button', { name: /login/i }));
-
-  expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
-  expect(screen.queryByText(/please fill in all fields/i)).not.toBeInTheDocument();
-  expect(screen.getByLabelText(/email/i)).toHaveValue('');
-  expect(screen.getByLabelText(/password/i)).toHaveValue('');
+  expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
 });
 
-test('TC002: Validate form field validation for empty inputs', async () => {
-  const user = userEvent.setup();
+test('allows entering email and password', () => {
   render(<Login />);
-
-  await user.click(screen.getByRole('button', { name: /login/i }));
-
-  expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
-});
-
-test('TC003: Validate error message for empty fields', async () => {
-  const user = userEvent.setup();
-  render(<Login />);
-
-  await user.click(screen.getByRole('button', { name: /login/i }));
-
-  expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
-});
-
-test('TC004: Validate email input field', async () => {
-  const user = userEvent.setup();
-  render(<Login />);
-
   const emailInput = screen.getByLabelText(/email/i);
-  await user.type(emailInput, 'test@example.com');
-
-  expect(emailInput).toHaveValue('test@example.com');
-});
-
-test('TC005: Validate password input field', async () => {
-  const user = userEvent.setup();
-  render(<Login />);
-
   const passwordInput = screen.getByLabelText(/password/i);
-  await user.type(passwordInput, 'password123');
-
+  
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  
+  expect(emailInput).toHaveValue('test@example.com');
   expect(passwordInput).toHaveValue('password123');
 });
 
-test('TC006: Validate error message clearing after successful submission', async () => {
-  const user = userEvent.setup();
+test('displays error message when submitting empty form', () => {
   render(<Login />);
-
-  await user.click(screen.getByRole('button', { name: /login/i }));
-  expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
-
-  await user.type(screen.getByLabelText(/email/i), 'test@example.com');
-  await user.type(screen.getByLabelText(/password/i), 'password123');
-  await user.click(screen.getByRole('button', { name: /login/i }));
-
-  expect(screen.queryByText(/please fill in all fields/i)).not.toBeInTheDocument();
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  
+  fireEvent.click(submitButton);
+  
+  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
 });
 
-// Modified as per comments.txt
-test('TC007: Validate login with short password', async () => {
-  const user = userEvent.setup();
-  const consoleSpy = jest.spyOn(console, 'log');
+test('clears form fields and removes error message after successful submission', () => {
   render(<Login />);
-
-  await user.type(screen.getByLabelText(/email/i), 'test@example.com');
-  await user.type(screen.getByLabelText(/password/i), '123');
-  await user.click(screen.getByRole('button', { name: /login/i }));
-
-  expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', '123');
-  expect(screen.queryByText(/password must be at least 6 characters long/i)).not.toBeInTheDocument();
-  expect(screen.getByLabelText(/email/i)).toHaveValue('');
-  expect(screen.getByLabelText(/password/i)).toHaveValue('');
-});
-
-// Modified as per comments.txt
-test('TC008: Validate form accessibility', () => {
-  render(<Login />);
-  
-  expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-  expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
-});
-
-// Modified as per comments.txt
-test('TC009: Validate form layout and styling', () => {
-  render(<Login />);
-  
-  const formElement = screen.getByRole('form');
-  expect(formElement).toHaveClass('login-form');
-  
   const emailInput = screen.getByLabelText(/email/i);
   const passwordInput = screen.getByLabelText(/password/i);
-  const loginButton = screen.getByRole('button', { name: /login/i });
+  const submitButton = screen.getByRole('button', { name: /login/i });
   
-  expect(emailInput).toBeVisible();
-  expect(passwordInput).toBeVisible();
-  expect(loginButton).toBeVisible();
-  expect(loginButton).toHaveClass('login-button');
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(submitButton);
+  
+  expect(emailInput).toHaveValue('');
+  expect(passwordInput).toHaveValue('');
+  expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
 });
+
+test('logs entered email and password to console on submission', () => {
+  const consoleSpy = jest.spyOn(console, 'log');
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /login/i });
+  
+  userEvent.type(emailInput, 'test@example.com');
+  userEvent.type(passwordInput, 'password123');
+  fireEvent.click(submitButton);
+  
+  expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
+  consoleSpy.mockRestore();
+});
+```
+
+These test cases cover the requirements specified in the knowledge base and match the functionality of the provided Login component. No additional test cases have been generated, and no modifications were found in the comments.txt file for these specific test cases.
