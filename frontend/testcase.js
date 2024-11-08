@@ -1,6 +1,3 @@
-Based on the provided JavaScript file for the Login component and the test cases mentioned in the 'test_automation_frontend_MultipleFiles' knowledge base, here are the required test cases:
-
-```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -62,6 +59,3 @@ test('logs entered email and password to console on submission', () => {
   expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
   consoleSpy.mockRestore();
 });
-```
-
-These test cases cover the requirements specified in the knowledge base and match the functionality of the provided Login component. No additional test cases have been generated, and no modifications were found in the comments.txt file for these specific test cases.
