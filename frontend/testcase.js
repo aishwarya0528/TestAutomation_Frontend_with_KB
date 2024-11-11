@@ -15,78 +15,120 @@ describe('Login Component', () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
+
     await userEvent.type(emailInput, 'test@example.com');
     await userEvent.type(passwordInput, 'password123');
+
     expect(emailInput).toHaveValue('test@example.com');
     expect(passwordInput).toHaveValue('password123');
   });
 
   test('displays error on empty submission', async () => {
     render(<Login />);
-    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    fireEvent.click(loginButton);
+
     expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
   test('displays error when only email is provided', async () => {
     render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
+    const emailInput = screen.getByLabelText('Email:');
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    await userEvent.type(emailInput, 'test@example.com');
+    fireEvent.click(loginButton);
+
     expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
   test('displays error when only password is provided', async () => {
     render(<Login />);
-    await userEvent.type(screen.getByLabelText('Password:'), 'password123');
-    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
+    const passwordInput = screen.getByLabelText('Password:');
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    await userEvent.type(passwordInput, 'password123');
+    fireEvent.click(loginButton);
+
     expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('successful login resets form and removes error messages', async () => {
-    const mockSubmit = jest.fn().mockResolvedValue({});
-    render(<Login onSubmit={mockSubmit} />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await userEvent.type(screen.getByLabelText('Password:'), 'password123');
-    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(mockSubmit).toHaveBeenCalledWith({
-      email: 'test@example.com',
-      password: 'password123',
-    });
-    expect(screen.getByLabelText('Email:')).toHaveValue('');
-    expect(screen.getByLabelText('Password:')).toHaveValue('');
+  test('successful login with valid credentials', async () => {
+    const mockLogin = jest.fn();
+    render(<Login onLogin={mockLogin} />);
+    const emailInput = screen.getByLabelText('Email:');
+    const passwordInput = screen.getByLabelText('Password:');
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'password123');
+    fireEvent.click(loginButton);
+
+    expect(mockLogin).toHaveBeenCalledWith('user@example.com', 'password123');
+    expect(emailInput).toHaveValue('');
+    expect(passwordInput).toHaveValue('');
     expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
   });
 
   test('logs successful login attempt', async () => {
-    const mockSubmit = jest.fn().mockResolvedValue({});
+    const mockLogin = jest.fn();
     const consoleSpy = jest.spyOn(console, 'log');
-    render(<Login onSubmit={mockSubmit} />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await userEvent.type(screen.getByLabelText('Password:'), 'password123');
-    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(consoleSpy).toHaveBeenCalledWith('Email: test@example.com Password: password123');
+    render(<Login onLogin={mockLogin} />);
+    const emailInput = screen.getByLabelText('Email:');
+    const passwordInput = screen.getByLabelText('Password:');
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'password123');
+    fireEvent.click(loginButton);
+
+    expect(consoleSpy).toHaveBeenCalledWith('Login attempt successful for user: user@example.com');
+  });
+
+  test('displays error message for invalid email format', async () => {
+    render(<Login />);
+    const emailInput = screen.getByLabelText('Email:');
+    const passwordInput = screen.getByLabelText('Password:');
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    await userEvent.type(emailInput, 'invalidemail');
+    await userEvent.type(passwordInput, 'password123');
+    fireEvent.click(loginButton);
+
+    expect(screen.getByText('Please enter a valid email address.')).toBeInTheDocument();
   });
 
   test('password field basic validation', async () => {
-    const mockSubmit = jest.fn().mockResolvedValue({});
-    render(<Login onSubmit={mockSubmit} />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await userEvent.type(screen.getByLabelText('Password:'), '123');
-    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(mockSubmit).toHaveBeenCalledWith({
-      email: 'test@example.com',
-      password: '123',
-    });
-    expect(screen.getByLabelText('Email:')).toHaveValue('');
-    expect(screen.getByLabelText('Password:')).toHaveValue('');
+    const mockLogin = jest.fn();
+    const consoleSpy = jest.spyOn(console, 'log');
+    render(<Login onLogin={mockLogin} />);
+    const emailInput = screen.getByLabelText('Email:');
+    const passwordInput = screen.getByLabelText('Password:');
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    await userEvent.type(emailInput, 'test@example.com');
+    await userEvent.type(passwordInput, '123');
+    fireEvent.click(loginButton);
+
+    expect(mockLogin).toHaveBeenCalledWith('test@example.com', '123');
+    expect(consoleSpy).toHaveBeenCalledWith('Login attempt successful for user: test@example.com');
+    expect(emailInput).toHaveValue('');
+    expect(passwordInput).toHaveValue('');
     expect(screen.queryByText('Password must be at least 6 characters long')).not.toBeInTheDocument();
   });
 
-  test('displays error message for incorrect login credentials', async () => {
-    const mockSubmit = jest.fn().mockRejectedValue(new Error('Invalid credentials'));
-    render(<Login onSubmit={mockSubmit} />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'wrong@example.com');
-    await userEvent.type(screen.getByLabelText('Password:'), 'wrongpassword');
-    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
+  test('displays error for invalid credentials', async () => {
+    const mockLogin = jest.fn().mockRejectedValue(new Error('Invalid credentials'));
+    render(<Login onLogin={mockLogin} />);
+    const emailInput = screen.getByLabelText('Email:');
+    const passwordInput = screen.getByLabelText('Password:');
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    await userEvent.type(emailInput, 'user@example.com');
+    await userEvent.type(passwordInput, 'wrongpassword');
+    fireEvent.click(loginButton);
+
     expect(await screen.findByText('Invalid email or password')).toBeInTheDocument();
   });
 });
