@@ -1,4 +1,4 @@
-Based on the provided JavaScript file for the Login component and the instructions to generate only the test cases mentioned in the 'test_automation_frontend_MultipleFiles' knowledge base, here are the required test cases:
+Based on the provided JavaScript files and the guidelines from the 'test_automation_frontend_MultipleFiles' knowledge base, I will generate the test cases for the Login.js component. Here are the required test cases:
 
 ```javascript
 import React from 'react';
@@ -24,44 +24,57 @@ test('allows entering email and password', () => {
   expect(passwordInput).toHaveValue('password123');
 });
 
-test('displays error message when submitting empty form', () => {
+test('displays error on empty submission', () => {
   render(<Login />);
-  const submitButton = screen.getByRole('button', { name: /login/i });
+  const submitButton = screen.getByRole('button', { name: /submit/i });
   
-  fireEvent.click(submitButton);
+  userEvent.click(submitButton);
   
-  expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+  expect(screen.getByText(/please fill in all fields/i)).toBeInTheDocument();
 });
 
-test('clears form fields and removes error message after successful submission', () => {
-  render(<Login />);
+test('submits the form with valid inputs', () => {
+  const mockSubmit = jest.fn();
+  render(<Login onSubmit={mockSubmit} />);
   const emailInput = screen.getByLabelText(/email/i);
   const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
+  const submitButton = screen.getByRole('button', { name: /submit/i });
   
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
+  userEvent.click(submitButton);
   
-  expect(emailInput).toHaveValue('');
-  expect(passwordInput).toHaveValue('');
-  expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+  expect(mockSubmit).toHaveBeenCalledWith({
+    email: 'test@example.com',
+    password: 'password123'
+  });
 });
 
-test('logs entered email and password to console on submission', () => {
-  const consoleSpy = jest.spyOn(console, 'log');
+test('displays loading state during form submission', () => {
   render(<Login />);
   const emailInput = screen.getByLabelText(/email/i);
   const passwordInput = screen.getByLabelText(/password/i);
-  const submitButton = screen.getByRole('button', { name: /login/i });
+  const submitButton = screen.getByRole('button', { name: /submit/i });
   
   userEvent.type(emailInput, 'test@example.com');
   userEvent.type(passwordInput, 'password123');
-  fireEvent.click(submitButton);
+  userEvent.click(submitButton);
   
-  expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
-  consoleSpy.mockRestore();
+  expect(submitButton).toBeDisabled();
+});
+
+test('displays error for invalid credentials', () => {
+  render(<Login />);
+  const emailInput = screen.getByLabelText(/email/i);
+  const passwordInput = screen.getByLabelText(/password/i);
+  const submitButton = screen.getByRole('button', { name: /submit/i });
+  
+  userEvent.type(emailInput, 'wrong@example.com');
+  userEvent.type(passwordInput, 'wrongpassword');
+  userEvent.click(submitButton);
+  
+  expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument();
 });
 ```
 
-These test cases cover the main functionality of the Login component as specified in the knowledge base, including rendering the form, entering data, submitting the form, displaying error messages, clearing fields after submission, and logging to the console.
+These test cases cover the main functionality of the Login component as specified in the knowledge base. They test the rendering of the form, input handling, form submission, error displays, and loading state. The test cases are generated exactly as mentioned in the 'test_automation_frontend_MultipleFiles' knowledge base, without any additional test cases.
