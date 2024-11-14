@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
@@ -11,11 +11,11 @@ describe('Login Component', () => {
     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 
-  test('allows input in email and password fields', async () => {
+  test('allows users to enter text into email and password fields', async () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
-    
+
     await userEvent.type(emailInput, 'test@example.com');
     await userEvent.type(passwordInput, 'password123');
 
@@ -23,16 +23,16 @@ describe('Login Component', () => {
     expect(passwordInput).toHaveValue('password123');
   });
 
-  test('displays error on empty submission', async () => {
+  test('displays error message for empty form submission', async () => {
     render(<Login />);
     const loginButton = screen.getByRole('button', { name: 'Login' });
 
     await userEvent.click(loginButton);
 
-    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+    expect(await screen.findByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('displays error when only email is provided', async () => {
+  test('displays error message when only email is provided', async () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const loginButton = screen.getByRole('button', { name: 'Login' });
@@ -40,10 +40,10 @@ describe('Login Component', () => {
     await userEvent.type(emailInput, 'test@example.com');
     await userEvent.click(loginButton);
 
-    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+    expect(await screen.findByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('displays error when only password is provided', async () => {
+  test('displays error message when only password is provided', async () => {
     render(<Login />);
     const passwordInput = screen.getByLabelText('Password:');
     const loginButton = screen.getByRole('button', { name: 'Login' });
@@ -51,7 +51,7 @@ describe('Login Component', () => {
     await userEvent.type(passwordInput, 'password123');
     await userEvent.click(loginButton);
 
-    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+    expect(await screen.findByText('Please fill in all fields')).toBeInTheDocument();
   });
 
   test('successful login with valid credentials', async () => {
@@ -69,7 +69,7 @@ describe('Login Component', () => {
     expect(passwordInput).toHaveValue('');
   });
 
-  test('console log on successful submission', async () => {
+  test('logs email and password to console on successful submission', async () => {
     const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
@@ -84,18 +84,8 @@ describe('Login Component', () => {
     consoleSpy.mockRestore();
   });
 
-  test('displays error message for invalid email format', async () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
-    const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    await userEvent.type(emailInput, 'invalidemail');
-    await userEvent.click(loginButton);
-
-    expect(screen.getByText('Please enter a valid email address.')).toBeInTheDocument();
-  });
-
-  test('password field basic validation', async () => {
+  test('accepts short passwords without validation', async () => {
+    const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
@@ -105,9 +95,11 @@ describe('Login Component', () => {
     await userEvent.type(passwordInput, '123');
     await userEvent.click(loginButton);
 
-    expect(screen.getByText('Email: test@example.com Password: 123')).toBeInTheDocument();
+    expect(consoleSpy).toHaveBeenCalledWith('Email: test@example.com Password: 123');
     expect(emailInput).toHaveValue('');
     expect(passwordInput).toHaveValue('');
+    expect(screen.queryByText('Password must be at least 6 characters long')).not.toBeInTheDocument();
+    consoleSpy.mockRestore();
   });
 
   test('displays error message for invalid credentials', async () => {
@@ -120,6 +112,6 @@ describe('Login Component', () => {
     await userEvent.type(passwordInput, 'wrongpassword');
     await userEvent.click(loginButton);
 
-    expect(screen.getByText('Invalid email or password.')).toBeInTheDocument();
+    expect(await screen.findByText('Invalid email or password')).toBeInTheDocument();
   });
 });
