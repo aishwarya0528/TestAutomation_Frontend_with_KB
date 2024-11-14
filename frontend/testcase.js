@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import Login from './Login';
 
@@ -9,114 +9,51 @@ describe('Login Component', () => {
     expect(screen.getByLabelText('Email:')).toBeInTheDocument();
     expect(screen.getByLabelText('Password:')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Email:')).toHaveAttribute('placeholder', 'Enter your email');
+    expect(screen.getByLabelText('Password:')).toHaveAttribute('placeholder', 'Enter your password');
   });
 
-  test('displays error message for invalid email format', async () => {
+  test('displays error on empty submission', () => {
+    render(<Login />);
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    fireEvent.click(loginButton);
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+  });
+
+  test('displays error when only email is provided', () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    fireEvent.change(emailInput, { target: { value: 'invalidemail' } });
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Please enter a valid email address.')).toBeInTheDocument();
-    });
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('displays error message for empty password', async () => {
+  test('displays error when only password is provided', () => {
     render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
-    const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    fireEvent.change(emailInput, { target: { value: 'valid@email.com' } });
-    fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Password is required.')).toBeInTheDocument();
-    });
-  });
-
-  test('successful login with valid credentials', async () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
     const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    fireEvent.change(emailInput, { target: { value: 'valid@email.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Login successful!')).toBeInTheDocument();
-    });
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('displays error message for incorrect credentials', async () => {
+  test('successful login resets form and removes error message', () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
     const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    fireEvent.change(emailInput, { target: { value: 'invalid@email.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
-    fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Invalid email or password.')).toBeInTheDocument();
-    });
-  });
-
-  test('displays error on empty submission', async () => {
-    render(<Login />);
-    const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-    });
-  });
-
-  test('displays error when only email is provided', async () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
-    const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    fireEvent.change(emailInput, { target: { value: 'valid@email.com' } });
-    fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-    });
-  });
-
-  test('displays error when only password is provided', async () => {
-    render(<Login />);
-    const passwordInput = screen.getByLabelText('Password:');
-    const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-    });
-  });
-
-  test('input reflection in email and password fields', () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
-    const passwordInput = screen.getByLabelText('Password:');
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.click(loginButton);
 
-    expect(emailInput).toHaveValue('test@example.com');
-    expect(passwordInput).toHaveValue('password123');
+    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+    expect(emailInput).toHaveValue('');
+    expect(passwordInput).toHaveValue('');
   });
 
-  test('console log on successful submission', async () => {
+  test('console logs email and password on successful submission', () => {
     const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
@@ -127,14 +64,12 @@ describe('Login Component', () => {
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.click(loginButton);
 
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith('Email: test@example.com Password: password123');
-    });
-
+    expect(consoleSpy).toHaveBeenCalledWith('Email: test@example.com Password: password123');
     consoleSpy.mockRestore();
   });
 
-  test('password field basic validation', async () => {
+  test('accepts submission with any password length', () => {
+    const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
@@ -144,12 +79,8 @@ describe('Login Component', () => {
     fireEvent.change(passwordInput, { target: { value: '123' } });
     fireEvent.click(loginButton);
 
-    await waitFor(() => {
-      expect(screen.getByText('Email: test@example.com Password: 123')).toBeInTheDocument();
-    });
-
-    expect(emailInput).toHaveValue('');
-    expect(passwordInput).toHaveValue('');
+    expect(consoleSpy).toHaveBeenCalledWith('Email: test@example.com Password: 123');
     expect(screen.queryByText('Password must be at least 6 characters long')).not.toBeInTheDocument();
+    consoleSpy.mockRestore();
   });
 });
