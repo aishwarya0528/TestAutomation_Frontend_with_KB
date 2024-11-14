@@ -11,7 +11,7 @@ describe('Login Component', () => {
     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 
-  test('allows users to enter text into email and password fields', async () => {
+  test('input fields reflect entered text', async () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
@@ -23,7 +23,7 @@ describe('Login Component', () => {
     expect(passwordInput).toHaveValue('password123');
   });
 
-  test('displays error message for empty form submission', async () => {
+  test('displays error message for empty submission', async () => {
     render(<Login />);
     const loginButton = screen.getByRole('button', { name: 'Login' });
 
@@ -69,7 +69,7 @@ describe('Login Component', () => {
     expect(passwordInput).toHaveValue('');
   });
 
-  test('logs email and password to console on successful submission', async () => {
+  test('console log on successful submission', async () => {
     const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
@@ -84,7 +84,7 @@ describe('Login Component', () => {
     consoleSpy.mockRestore();
   });
 
-  test('accepts short passwords without validation', async () => {
+  test('password field basic validation', async () => {
     const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
@@ -112,6 +112,6 @@ describe('Login Component', () => {
     await userEvent.type(passwordInput, 'wrongpassword');
     await userEvent.click(loginButton);
 
-    expect(await screen.findByText('Invalid email or password')).toBeInTheDocument();
+    expect(await screen.findByText('Invalid email or password.')).toBeInTheDocument();
   });
 });
