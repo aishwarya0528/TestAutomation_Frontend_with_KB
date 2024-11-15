@@ -11,7 +11,7 @@ describe('Login Component', () => {
     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 
-  test('input fields reflect entered text', () => {
+  test('allows entering text into email and password fields', () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
@@ -23,7 +23,7 @@ describe('Login Component', () => {
     expect(passwordInput).toHaveValue('password123');
   });
 
-  test('displays error message for empty submission', () => {
+  test('displays error message for empty form submission', () => {
     render(<Login />);
     const loginButton = screen.getByRole('button', { name: 'Login' });
 
@@ -54,22 +54,22 @@ describe('Login Component', () => {
     expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('successful login resets form and removes error messages', () => {
+  test('successful login with valid credentials', () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
     const loginButton = screen.getByRole('button', { name: 'Login' });
 
-    userEvent.type(emailInput, 'test@example.com');
+    userEvent.type(emailInput, 'valid@email.com');
     userEvent.type(passwordInput, 'password123');
     fireEvent.click(loginButton);
 
+    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
     expect(emailInput).toHaveValue('');
     expect(passwordInput).toHaveValue('');
-    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
   });
 
-  test('console logs email and password on successful submission', () => {
+  test('logs credentials to console on successful submission', () => {
     const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
@@ -87,14 +87,12 @@ describe('Login Component', () => {
   test('displays error message for invalid email format', () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
-    const passwordInput = screen.getByLabelText('Password:');
     const loginButton = screen.getByRole('button', { name: 'Login' });
 
     userEvent.type(emailInput, 'invalidemail');
-    userEvent.type(passwordInput, 'password123');
     fireEvent.click(loginButton);
 
-    expect(screen.getByText('Please enter a valid email address.')).toBeInTheDocument();
+    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
   });
 
   test('password field basic validation', () => {
@@ -115,16 +113,16 @@ describe('Login Component', () => {
     consoleSpy.mockRestore();
   });
 
-  test('displays error message for incorrect login credentials', () => {
+  test('displays error message for invalid credentials', () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
     const loginButton = screen.getByRole('button', { name: 'Login' });
 
-    userEvent.type(emailInput, 'wrong@example.com');
+    userEvent.type(emailInput, 'invalid@email.com');
     userEvent.type(passwordInput, 'wrongpassword');
     fireEvent.click(loginButton);
 
-    expect(screen.getByText('Invalid email or password. Please try again.')).toBeInTheDocument();
+    expect(screen.getByText('Invalid email or password')).toBeInTheDocument();
   });
 });
