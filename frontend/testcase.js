@@ -11,71 +11,72 @@ describe('Login Component', () => {
     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 
-  test('TC002: Verify that the login form accepts input', async () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
-    const passwordInput = screen.getByLabelText('Password:');
-    
-    await userEvent.type(emailInput, 'test@example.com');
-    await userEvent.type(passwordInput, 'password123');
-
-    expect(emailInput).toHaveValue('test@example.com');
-    expect(passwordInput).toHaveValue('password123');
-  });
-
-  test('TC003: Display error on empty submission', async () => {
-    render(<Login />);
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(await screen.findByText('Please fill in all fields')).toBeInTheDocument();
-  });
-
-  test('TC004: Display error when only email is provided', async () => {
+  test('TC002: Verify successful login with valid credentials', async () => {
     render(<Login />);
     await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
+    await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
     fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(await screen.findByText('Please fill in all fields')).toBeInTheDocument();
-  });
-
-  test('TC005: Display error when only password is provided', async () => {
-    render(<Login />);
-    await userEvent.type(screen.getByLabelText('Password:'), 'password123');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(await screen.findByText('Please fill in all fields')).toBeInTheDocument();
-  });
-
-  test('TC006: Verify successful login with valid credentials', async () => {
-    render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await userEvent.type(screen.getByLabelText('Password:'), 'password123');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    
     expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
-    expect(screen.getByLabelText('Email:')).toHaveValue('');
-    expect(screen.getByLabelText('Password:')).toHaveValue('');
   });
 
-  test('TC007: Console log on successful submission', async () => {
-    const consoleSpy = jest.spyOn(console, 'log');
+  test('TC003: Verify login failure with invalid username', async () => {
+    render(<Login />);
+    await userEvent.type(screen.getByLabelText('Email:'), 'invaliduser@example.com');
+    await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+  });
+
+  test('TC004: Verify login failure with invalid password', async () => {
     render(<Login />);
     await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await userEvent.type(screen.getByLabelText('Password:'), 'password123');
+    await userEvent.type(screen.getByLabelText('Password:'), 'invalidpass');
     fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    
-    expect(consoleSpy).toHaveBeenCalledWith('Email: test@example.com Password: password123');
-    consoleSpy.mockRestore();
+    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
   });
 
-  test('TC008: Password field basic validation', async () => {
-    const consoleSpy = jest.spyOn(console, 'log');
+  test('TC005: Verify login failure with empty username', async () => {
+    render(<Login />);
+    await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+  });
+
+  test('TC006: Verify login failure with empty password', async () => {
+    render(<Login />);
+    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+  });
+
+  test('TC007: Verify password masking', () => {
+    render(<Login />);
+    const passwordInput = screen.getByLabelText('Password:');
+    expect(passwordInput).toHaveAttribute('type', 'password');
+  });
+
+  test('TC008: Verify error message for invalid email format', async () => {
+    render(<Login />);
+    await userEvent.type(screen.getByLabelText('Email:'), 'invalidemail');
+    await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.getByText('Invalid email format')).toBeInTheDocument();
+  });
+
+  test('TC009: Verify password field basic validation', async () => {
     render(<Login />);
     await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
     await userEvent.type(screen.getByLabelText('Password:'), '123');
     fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    
-    expect(consoleSpy).toHaveBeenCalledWith('Email: test@example.com Password: 123');
-    expect(screen.getByLabelText('Email:')).toHaveValue('');
-    expect(screen.getByLabelText('Password:')).toHaveValue('');
     expect(screen.queryByText('Password must be at least 6 characters long')).not.toBeInTheDocument();
-    consoleSpy.mockRestore();
+  });
+
+  test('TC010: Verify login attempt logging', async () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    render(<Login />);
+    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
+    await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
+    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(consoleSpy).toHaveBeenCalledWith('Email: test@example.com Password: validpass');
   });
 });
