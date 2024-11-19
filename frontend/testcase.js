@@ -1,82 +1,122 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
 
 describe('Login Component', () => {
-  test('TC001: Verify that the login page loads correctly', () => {
+  test('TC001: Verify successful login with valid credentials', async () => {
     render(<Login />);
-    expect(screen.getByLabelText('Email:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Password:')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
-  });
-
-  test('TC002: Verify successful login with valid credentials', async () => {
-    render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
+    
+    await userEvent.type(screen.getByLabelText('Username:'), 'validuser');
     await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+    
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    await userEvent.click(loginButton);
+    
+    expect(screen.getByText('Login successful!')).toBeInTheDocument();
   });
 
-  test('TC003: Verify login failure with invalid username', async () => {
+  test('TC002: Verify login failure with invalid username', async () => {
     render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'invaliduser@example.com');
+    
+    await userEvent.type(screen.getByLabelText('Username:'), 'invaliduser');
     await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+    
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    await userEvent.click(loginButton);
+    
+    expect(screen.getByText('Invalid username or password')).toBeInTheDocument();
   });
 
-  test('TC004: Verify login failure with invalid password', async () => {
+  test('TC003: Verify login failure with invalid password', async () => {
     render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
+    
+    await userEvent.type(screen.getByLabelText('Username:'), 'validuser');
     await userEvent.type(screen.getByLabelText('Password:'), 'invalidpass');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
+    
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    await userEvent.click(loginButton);
+    
+    expect(screen.getByText('Invalid username or password')).toBeInTheDocument();
   });
 
-  test('TC005: Verify login failure with empty username', async () => {
+  test('TC004: Verify error message for empty username', async () => {
     render(<Login />);
+    
     await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+    
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    await userEvent.click(loginButton);
+    
+    expect(screen.getByText('Username is required')).toBeInTheDocument();
   });
 
-  test('TC006: Verify login failure with empty password', async () => {
+  test('TC005: Verify error message for empty password', async () => {
     render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+    
+    await userEvent.type(screen.getByLabelText('Username:'), 'validuser');
+    
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    await userEvent.click(loginButton);
+    
+    expect(screen.getByText('Password is required')).toBeInTheDocument();
   });
 
-  test('TC007: Verify password masking', () => {
+  test('TC006: Verify password masking', () => {
     render(<Login />);
+    
     const passwordInput = screen.getByLabelText('Password:');
     expect(passwordInput).toHaveAttribute('type', 'password');
   });
 
-  test('TC008: Verify error message for invalid email format', async () => {
+  test('TC007: Verify login button is disabled when fields are empty', () => {
     render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'invalidemail');
-    await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.getByText('Invalid email format')).toBeInTheDocument();
+    
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    expect(loginButton).toBeDisabled();
   });
 
-  test('TC009: Verify password field basic validation', async () => {
+  test('TC008: Verify login button is enabled when both fields are filled', async () => {
     render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await userEvent.type(screen.getByLabelText('Password:'), '123');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.queryByText('Password must be at least 6 characters long')).not.toBeInTheDocument();
+    
+    await userEvent.type(screen.getByLabelText('Username:'), 'user');
+    await userEvent.type(screen.getByLabelText('Password:'), 'pass');
+    
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    expect(loginButton).toBeEnabled();
   });
 
-  test('TC010: Verify login attempt logging', async () => {
-    const consoleSpy = jest.spyOn(console, 'log');
+  test('TC009: Verify error handling for network failure', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    
     render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
+    
+    await userEvent.type(screen.getByLabelText('Username:'), 'networkuser');
+    await userEvent.type(screen.getByLabelText('Password:'), 'networkpass');
+    
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    await userEvent.click(loginButton);
+    
+    expect(screen.getByText('Network error. Please try again.')).toBeInTheDocument();
+    
+    console.error.mockRestore();
+  });
+
+  test('TC010: Verify "Remember Me" functionality', async () => {
+    render(<Login />);
+    
+    const rememberMeCheckbox = screen.getByLabelText('Remember Me');
+    await userEvent.click(rememberMeCheckbox);
+    
+    expect(rememberMeCheckbox).toBeChecked();
+    
+    await userEvent.type(screen.getByLabelText('Username:'), 'validuser');
     await userEvent.type(screen.getByLabelText('Password:'), 'validpass');
-    fireEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(consoleSpy).toHaveBeenCalledWith('Email: test@example.com Password: validpass');
+    
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+    await userEvent.click(loginButton);
+    
+    expect(screen.getByText('Login successful!')).toBeInTheDocument();
+    expect(localStorage.getItem('rememberedUser')).toBe('validuser');
   });
 });
