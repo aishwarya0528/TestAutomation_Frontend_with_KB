@@ -1,6 +1,3 @@
-Here are the Jest test cases for the Login component:
-
-```javascript
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -72,4 +69,3 @@ describe('Login Component', () => {
     consoleSpy.mockRestore();
   });
 });
-```
