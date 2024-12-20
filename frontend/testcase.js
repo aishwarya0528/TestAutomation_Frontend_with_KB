@@ -1,3 +1,6 @@
+Here's the Jest test code for the Login component:
+
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -116,3 +119,4 @@ describe('Login Component', () => {
     expect(passwordInput).toHaveAttribute('placeholder', 'Enter your password');
   });
 });
+```
