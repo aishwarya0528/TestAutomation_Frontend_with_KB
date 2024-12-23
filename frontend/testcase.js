@@ -1,6 +1,3 @@
-Here are the Jest test cases for the provided JavaScript files:
-
-```javascript
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';
@@ -129,4 +126,3 @@ describe('Login Component', () => {
     expect(passwordInput).toHaveAttribute('placeholder', 'Enter your password');
   });
 });
-```
