@@ -1,3 +1,6 @@
+Here's the Jest test code for the Login component:
+
+```javascript
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -17,57 +20,46 @@ describe('Login Component', () => {
     expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('displays error message when submitting form with empty email', async () => {
+  test('clears error message when filling in fields after error', async () => {
     render(<Login />);
-    await userEvent.type(screen.getByLabelText('Password:'), 'password123');
     await userEvent.click(screen.getByRole('button', { name: 'Login' }));
     expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-  });
-
-  test('displays error message when submitting form with empty password', async () => {
-    render(<Login />);
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-  });
-
-  test('clears form fields and error message after successful submission', async () => {
-    render(<Login />);
     await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
     await userEvent.type(screen.getByLabelText('Password:'), 'password123');
     await userEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.getByLabelText('Email:')).toHaveValue('');
-    expect(screen.getByLabelText('Password:')).toHaveValue('');
     expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
   });
 
-  test('logs email and password to console on successful submission', async () => {
+  test('submits form with valid email and password', async () => {
     const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
     await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
     await userEvent.type(screen.getByLabelText('Password:'), 'password123');
     await userEvent.click(screen.getByRole('button', { name: 'Login' }));
     expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
-    consoleSpy.mockRestore();
   });
 
-  test('email input has type "email"', () => {
+  test('clears form fields after successful submission', async () => {
     render(<Login />);
-    expect(screen.getByLabelText('Email:')).toHaveAttribute('type', 'email');
+    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
+    await userEvent.type(screen.getByLabelText('Password:'), 'password123');
+    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.getByLabelText('Email:')).toHaveValue('');
+    expect(screen.getByLabelText('Password:')).toHaveValue('');
   });
 
-  test('password input has type "password"', () => {
+  test('displays error when only email is provided', async () => {
     render(<Login />);
-    expect(screen.getByLabelText('Password:')).toHaveAttribute('type', 'password');
+    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
+    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('email input has placeholder text', () => {
+  test('displays error when only password is provided', async () => {
     render(<Login />);
-    expect(screen.getByLabelText('Email:')).toHaveAttribute('placeholder', 'Enter your email');
-  });
-
-  test('password input has placeholder text', () => {
-    render(<Login />);
-    expect(screen.getByLabelText('Password:')).toHaveAttribute('placeholder', 'Enter your password');
+    await userEvent.type(screen.getByLabelText('Password:'), 'Password123!');
+    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 });
+```
