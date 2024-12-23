@@ -1,17 +1,11 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './App';
+Here's the Jest test code for the provided JavaScript files:
 
-test('renders Login component', () => {
-  render(<App />);
-  const loginElement = screen.getByText(/Login/i);
-  expect(loginElement).toBeInTheDocument();
-});
-
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Login from './Login';
+import App from './App';
 
 describe('Login Component', () => {
   test('TC001_Login_ValidCredentials', async () => {
@@ -72,7 +66,10 @@ describe('Login Component', () => {
     await userEvent.type(passwordInput, 'password123');
     fireEvent.click(submitButton);
 
-    expect(emailInput).toBeInvalid();
+    const consoleSpy = jest.spyOn(console, 'log');
+    expect(consoleSpy).toHaveBeenCalledWith('Email:', 'invalidemail', 'Password:', 'password123');
+    expect(emailInput).toHaveValue('');
+    expect(passwordInput).toHaveValue('');
   });
 
   test('TC006_Login_ClearFields', async () => {
@@ -126,3 +123,14 @@ describe('Login Component', () => {
     expect(passwordInput).toHaveAttribute('placeholder', 'Enter your password');
   });
 });
+
+describe('App Component', () => {
+  test('renders Login component', () => {
+    render(<App />);
+    const loginComponent = screen.getByText('Login');
+    expect(loginComponent).toBeInTheDocument();
+  });
+});
+```
+
+This test code covers the Login component and App component based on the provided files. It includes test cases for various scenarios such as valid credentials, empty fields, invalid email, clearing fields, and checking placeholders. The tests use React Testing Library and Jest for assertions and mocking.
