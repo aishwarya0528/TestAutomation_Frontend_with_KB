@@ -1,3 +1,16 @@
+Here are the Jest test cases for the provided JavaScript files:
+
+```javascript
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+test('renders Login component', () => {
+  render(<App />);
+  const loginElement = screen.getByText(/Login/i);
+  expect(loginElement).toBeInTheDocument();
+});
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -116,3 +129,4 @@ describe('Login Component', () => {
     expect(passwordInput).toHaveAttribute('placeholder', 'Enter your password');
   });
 });
+```
