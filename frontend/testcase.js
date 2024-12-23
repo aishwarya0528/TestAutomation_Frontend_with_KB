@@ -1,3 +1,6 @@
+Here's the Jest test code for the provided JavaScript files:
+
+```javascript
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -128,3 +131,6 @@ describe('App Component', () => {
     expect(loginComponent).toBeInTheDocument();
   });
 });
+```
+
+This test code covers both the Login and App components, including various test cases for the Login component's functionality and the App component's rendering of the Login component.
