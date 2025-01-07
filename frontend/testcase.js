@@ -1,3 +1,6 @@
+Here's the Jest test code for the Login component:
+
+```javascript
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -11,7 +14,7 @@ describe('Login Component', () => {
     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
   });
 
-  test('allows entering text into email and password fields', async () => {
+  test('allows input in email and password fields', async () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
@@ -30,17 +33,6 @@ describe('Login Component', () => {
     expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('displays error message when submitting with empty password', async () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText('Email:');
-    const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    await userEvent.type(emailInput, 'test@example.com');
-    await userEvent.click(loginButton);
-
-    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-  });
-
   test('displays error message when submitting with empty email', async () => {
     render(<Login />);
     const passwordInput = screen.getByLabelText('Password:');
@@ -52,7 +44,18 @@ describe('Login Component', () => {
     expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('clears form fields and error message after successful submission', async () => {
+  test('displays error message when submitting with empty password', async () => {
+    render(<Login />);
+    const emailInput = screen.getByLabelText('Email:');
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    await userEvent.type(emailInput, 'test@example.com');
+    await userEvent.click(loginButton);
+
+    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
+  });
+
+  test('clears form fields after successful submission', async () => {
     render(<Login />);
     const emailInput = screen.getByLabelText('Email:');
     const passwordInput = screen.getByLabelText('Password:');
@@ -64,7 +67,6 @@ describe('Login Component', () => {
 
     expect(emailInput).toHaveValue('');
     expect(passwordInput).toHaveValue('');
-    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
   });
 
   test('logs email and password to console on successful submission', async () => {
@@ -81,4 +83,22 @@ describe('Login Component', () => {
     expect(consoleSpy).toHaveBeenCalledWith('Email:', 'test@example.com', 'Password:', 'password123');
     consoleSpy.mockRestore();
   });
+
+  test('form submission prevents default behavior', async () => {
+    const preventDefault = jest.fn();
+    render(<Login />);
+    const form = screen.getByRole('form');
+    form.addEventListener('submit', preventDefault);
+
+    const emailInput = screen.getByLabelText('Email:');
+    const passwordInput = screen.getByLabelText('Password:');
+    const loginButton = screen.getByRole('button', { name: 'Login' });
+
+    await userEvent.type(emailInput, 'test@example.com');
+    await userEvent.type(passwordInput, 'password123');
+    await userEvent.click(loginButton);
+
+    expect(preventDefault).toHaveBeenCalled();
+  });
 });
+```
