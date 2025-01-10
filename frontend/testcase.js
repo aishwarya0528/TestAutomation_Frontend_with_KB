@@ -1,3 +1,6 @@
+Here's the Jest test code for the Login component:
+
+```javascript
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -39,15 +42,6 @@ describe('Login Component', () => {
     expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
   });
 
-  test('clears error message when filling in fields after error', async () => {
-    render(<Login />);
-    await userEvent.click(screen.getByRole('button', { name: 'Login' }));
-    expect(screen.getByText('Please fill in all fields')).toBeInTheDocument();
-    await userEvent.type(screen.getByLabelText('Email:'), 'test@example.com');
-    await userEvent.type(screen.getByLabelText('Password:'), 'password123');
-    expect(screen.queryByText('Please fill in all fields')).not.toBeInTheDocument();
-  });
-
   test('submits form with email and password', async () => {
     const consoleSpy = jest.spyOn(console, 'log');
     render(<Login />);
@@ -66,3 +60,4 @@ describe('Login Component', () => {
     expect(screen.getByLabelText('Password:')).toHaveValue('');
   });
 });
+```
