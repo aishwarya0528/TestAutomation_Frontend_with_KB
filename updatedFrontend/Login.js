@@ -1,18 +1,17 @@
 import React, { useState, useCallback } from 'react'; // Added useCallback for performance optimization
 import PropTypes from 'prop-types'; // Added PropTypes for type checking
 
-// Use arrow function for consistent style
-const Login = ({ onLogin }) => { // Added onLogin prop for better component communication
+// Using arrow function for consistent style
+const Login = ({ onLoginSuccess }) => { // Added prop for handling successful login
   const [formData, setFormData] = useState({ email: '', password: '' }); // Combined state into a single object
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Use useCallback to memoize the handler
+  // Using useCallback to memoize the handler
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({ ...prevData, [name]: value }));
   }, []);
 
-  // Use useCallback to memoize the submit handler
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
     const { email, password } = formData;
@@ -22,13 +21,13 @@ const Login = ({ onLogin }) => { // Added onLogin prop for better component comm
       return;
     }
 
-    // Use the onLogin prop instead of console.log
-    onLogin(email, password);
+    // TODO: Replace with actual login logic
+    console.log('Email:', email, 'Password:', password);
+    onLoginSuccess(email); // Call the prop function on successful login
 
-    // Reset form and error message
     setFormData({ email: '', password: '' });
     setErrorMessage('');
-  }, [formData, onLogin]);
+  }, [formData, onLoginSuccess]);
 
   return (
     <div className="login-container">
@@ -45,6 +44,7 @@ const Login = ({ onLogin }) => { // Added onLogin prop for better component comm
             onChange={handleChange}
             required
             placeholder="Enter your email"
+            autoComplete="username" // Added for better autofill support
           />
         </div>
         <div className="form-group">
@@ -57,7 +57,7 @@ const Login = ({ onLogin }) => { // Added onLogin prop for better component comm
             onChange={handleChange}
             required
             placeholder="Enter your password"
-            autoComplete="current-password" // Added for better security and user experience
+            autoComplete="current-password" // Added for better autofill support
           />
         </div>
         <button type="submit" className="login-button">Login</button>
@@ -66,9 +66,9 @@ const Login = ({ onLogin }) => { // Added onLogin prop for better component comm
   );
 };
 
-// Add PropTypes for type checking
+// Added PropTypes for type checking
 Login.propTypes = {
-  onLogin: PropTypes.func.isRequired,
+  onLoginSuccess: PropTypes.func.isRequired,
 };
 
 export default Login;
